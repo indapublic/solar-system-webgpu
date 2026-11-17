@@ -40,6 +40,8 @@
   #ui .credits { margin-top: .7em; font-size: .76em; letter-spacing: .1em; color: #5f6b96; text-transform: none; }
   #ui.hide { opacity: 0; visibility: hidden; }
   body.quiet #ui { opacity: 0; visibility: hidden; }
+  #fpsCounter { position:fixed;left:16px;bottom:12px;z-index:8;padding:5px 9px;border:1px solid #44568e66;border-radius:7px;background:#070c19cc;color:#a9c8e8;font:600 11px/1.3 ui-monospace,Consolas,monospace;pointer-events:none; }
+  body.wall #fpsCounter,body.clean #fpsCounter {display:none}
   #hud {
     position: fixed; top: 10px; left: 14px; margin: 0; display: none; pointer-events: none;
     font: 11px/1.65 ui-monospace, Consolas, monospace; letter-spacing: .08em; color: #8f9dd6;
@@ -234,12 +236,13 @@
     color: #e6edff; text-shadow: 0 0 12px #6f8dff66; }
   #engine .seg.ticks button { cursor: pointer; }
   body.clean #engine, body.wall #engine { display: none; }
-  #panel .seg button, #engine .seg button, #panel .goto button {
+  #panel .seg button, #engine .seg button, #panel .goto button, #panel .menuAction {
     flex: 1; padding: 5px 0; border: 0; border-radius: 7px; background: #141c33; color: #b7c5ee;
     font: 600 10px/1 ui-monospace, monospace; letter-spacing: .1em; cursor: pointer; text-transform: uppercase;
   }
   #panel .seg button.on { background: linear-gradient(#4d6bd6, #3a53b0); color: #fff; }
-  #panel .seg button:hover, #panel .goto button:hover { background: #22305a; }
+  #panel .seg button:hover, #panel .goto button:hover, #panel .menuAction:hover { background: #22305a; }
+  #panel .menuAction { display:block;width:100%;margin-top:20px;min-height:42px;border:1px solid #526b9e66;transition:background .15s; }
   #panel .goto { display: flex; flex-wrap: wrap; gap: 4px; }
   #panel .goto button { flex: 1 1 44%; }
   #panel .note { margin-top: 10px; font-size: 10px; color: #6c7cab; letter-spacing: .04em; }
@@ -393,14 +396,43 @@
     text-transform: uppercase; box-shadow: inset 0 0 0 1px #ff7a3c88, 0 0 18px #ff5a1f33;
   }
   #burn button:hover { background: #2a1a0e; }
+  #bhPreviewNotice { position: fixed; z-index: 90; top: 14px; left: 50%; transform: translateX(-50%);
+    max-width: calc(100vw - 32px); padding: 10px 14px; border: 1px solid #91b5ed;
+    border-radius: 8px; background: #0c1528ed; color: #e0edff; font: 13px/1.5 system-ui; }
+  #bhPreviewNotice[hidden] { display: none; }
+  #bhPreviewNotice button { margin: 6px 0 0; padding: 6px 10px; cursor: pointer; }
+/* Navigation shell */
+  #panel { width:min(430px,calc(100vw - 48px));z-index:30; padding:20px;max-height:calc(100dvh - 90px);font:14px/1.5 system-ui,sans-serif; }
+  #panel [hidden] {display:none!important} #panel h3 {font-size:18px;color:#edf3ff;margin:22px 0 14px}
+  .menuHeader {display:flex;align-items:center;justify-content:space-between;gap:12px}.menuHeader h2 {margin:0!important}
+  #panel button {min-height:36px;font-size:12px;padding:7px 10px} #panel .chk {min-height:32px}
+  #panel .menuTabs {display:flex;flex-wrap:wrap;gap:6px;padding:16px 0;border-bottom:1px solid #ffffff20}
+  #panel .menuTabs button {flex:1 0 27%;border:1px solid #526b9e66;background:#131e34;color:#bdcdeb;border-radius:8px;cursor:pointer} .menuHeader button {border:1px solid #526b9e66;background:#131e34;color:#dce8ff;border-radius:8px;cursor:pointer} #panel .menuTabs .on {background:#294b82;color:#fff}
+  #panel section>.console {margin:16px 0} #panel section>.row {margin-top:15px}
+  button:focus-visible,input:focus-visible,summary:focus-visible {outline:2px solid #9ddcff;outline-offset:3px}
+  .navButton {position:fixed;top:12px;z-index:20;border:1px solid #526b9e80;border-radius:10px;background:#0c1226e8;color:#dce8ff;padding:10px 14px;cursor:pointer;font:600 13px system-ui}
+  #shipBtn {right:154px} #searchBtn {right:108px;z-index:20} #qSeg {display:grid!important;grid-template-columns:1fr 1fr} #helpBtn {right:62px;width:38px;padding:10px} #gear {z-index:20}
+  body.wall .navButton,body.clean .navButton {display:none} #ui .keys {display:none}
+  #guide {box-sizing:border-box;width:min(620px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow:auto;border:1px solid #718bbc66;border-radius:22px;padding:32px;background:#0b1425;color:#dce8ff;font:15px/1.6 system-ui,sans-serif;box-shadow:0 30px 100px #000b}
+  #guide::backdrop {background:#020611b8;backdrop-filter:blur(5px)} #guide h2 {font-size:30px;margin:0 0 8px} #guide p {color:#a7bad8}
+  .guideGrid {display:grid;grid-template-columns:110px 1fr;gap:12px;margin:24px 0} kbd {font:600 13px monospace;color:#bce9ff}
+  #guide button {margin-top:20px;width:100%;padding:13px;border:0;border-radius:10px;background:#96d9ff;color:#10243c;font-size:16px;font-weight:700;cursor:pointer}
+  #guide details {margin:16px 0;color:#b5c9e5} #guide label {display:flex;gap:10px;align-items:center}
+  @media(max-width:600px) {#panel {top:64px;right:8px;width:calc(100vw - 48px);padding:16px} #stat {max-width:90px;min-width:0;font-size:8px;letter-spacing:0} #shipBtn {padding:10px;right:152px} #phys {display:none} #guide {padding:24px} }
 </style>
 </head>
 <body>
 <canvas id="c"></canvas>
 <div id="entryGlow"></div>
 <div id="toast"></div>
+<div id="bhPreviewNotice" hidden role="status">
+  <div data-i18n="bhPreviewOn">Осмотр чёрной дыры: опасности временно отключены. Настройки не изменены.</div>
+  <div id="bhPreviewChoice"></div>
+  <button id="bhPreviewExit" type="button" data-i18n="bhPreviewExit">Завершить осмотр (Esc)</button>
+</div>
 <div id="boot"><span data-i18n="boot">Собираю систему</span><i><b></b></i></div>
 <pre id="hud"></pre>
+<output id="fpsCounter" aria-label="FPS">— FPS</output>
 <div id="labels"></div>
 <div id="skyLabels"></div>
 <div id="stat">
@@ -448,6 +480,7 @@
   </div>
   <div class="cFoot" id="spdUnit">720 ед/с · колесо тоже крутит</div>
 </div>
+<button id="shipBtn" class="navButton" data-i18n="shipMenu">Корабль</button><button id="helpBtn" class="navButton" aria-label="Помощь">?</button>
 <button id="gear" aria-label="Настройки">⚙</button>
 <button id="searchBtn" aria-label="Поиск" title="Поиск">⌕</button>
 <div id="search">
@@ -558,17 +591,29 @@
   <div class="row"><span data-i18n="quality">Качество</span></div>
   <div class="seg" id="qSeg">
     <button data-q="auto" class="on" data-i18n="qAuto">Авто</button>
+    <button data-q="medium" data-i18n="qMedium">Среднее</button>
     <button data-q="full" data-i18n="qFull">Полное</button>
     <button data-q="low" data-i18n="qLow">Эконом</button>
   </div>
+  <label class="chk"><input type="checkbox" id="cSimpleRocks"><span data-i18n="simpleRocks">Простые одинаковые астероиды</span></label>
 
   <div class="sep"></div>
 
+  <p id="qualityStatus" role="status"></p>
   <div class="row"><span data-i18n="goto">Перейти</span></div>
   <div class="goto" id="goSeg"></div>
 
   <div class="note" data-i18n="note">Tab — спрятать всё · H — телеметрия · G — двигатель · M — звук</div>
 </div>
+<dialog id="guide" aria-labelledby="guideTitle">
+  <h2 id="guideTitle" data-i18n="guideTitle">Ваш первый полёт</h2>
+  <p data-i18n="guideIntro">Солнечная система открыта для исследования. Начните с Земли или найдите свою следующую цель.</p>
+  <div class="guideGrid"><kbd>W A S D</kbd><span data-i18n="guideMove">Лететь · Q / E — вниз и вверх</span><kbd data-i18n="guideClick">Клик + мышь</kbd><span data-i18n="guideLook">Осмотреться · Esc — освободить мышь</span><kbd data-i18n="guideWheel">Колесо</kbd><span data-i18n="guideSpeed">Изменить скорость · Shift — ускориться</span><kbd>F</kbd><span data-i18n="guideFind">Найти планету и подлететь к ней</span><kbd>O</kbd><span data-i18n="guideSettings">Настройки · «Корабль» — навигация и время</span></div>
+  <details><summary data-i18n="guideMore">Ещё команды</summary><p data-i18n="guideCommands">1–8 — планеты · 9 — Солнце · 0 — Луна · T — следить · V — обзор · B — чёрная дыра · R — выбраться · M — звук · Tab — интерфейс</p></details>
+  <p data-i18n="guideTip">Для спокойного полёта включите «Безопасное исследование» в меню корабля. Если движение тормозит, выберите низкую графику в настройках.</p>
+  <label><input id="guideRepeat" type="checkbox"><span data-i18n="guideRepeat">Показывать при запуске</span></label>
+  <button id="guideStart" data-i18n="guideStart">Начать исследование</button>
+</dialog>
 <div id="modal">
   <div class="mbox">
     <h3 id="mTitle"></h3>
@@ -633,6 +678,28 @@ const CONSTNAME_RAW = "0.7313,0.6219,0.2801|Андромеда|Andromeda;-0.7391
 // ============================================================ языки
 const I18N = {
   ru: {
+    shipMenu: "Корабль",
+    graphicsMenu: "Графика",
+    sceneMenu: "Сцена",
+    audioMenu: "Звук",
+    interfaceMenu: "Интерфейс",
+    helpMenu: "Инструкция и команды",
+    closeMenu: "Закрыть меню",
+    qMedium: "Среднее",
+    guideTitle: "Ваш первый полёт",
+    guideIntro: "Солнечная система открыта для исследования. Начните с Земли или найдите свою следующую цель.",
+    guideMove: "Лететь · Q / E — вниз и вверх",
+    guideClick: "Клик + мышь",
+    guideLook: "Осмотреться · Esc — освободить мышь",
+    guideWheel: "Колесо",
+    guideSpeed: "Изменить скорость · Shift — ускориться",
+    guideFind: "Найти планету и подлететь к ней",
+    guideSettings: "Настройки · «Корабль» — навигация и время",
+    guideMore: "Ещё команды",
+    guideCommands: "1–8 — планеты · 9 — Солнце · 0 — Луна · T — следить · V — обзор · B — чёрная дыра · R — выбраться · M — звук · Tab — интерфейс",
+    guideTip: "Для спокойного полёта включите «Безопасное исследование» в меню корабля. Если движение тормозит, выберите низкую графику в настройках.",
+    guideRepeat: "Показывать при запуске",
+    guideStart: "Начать исследование",
     boot: 'Собираю систему',
     sub: 'реальные карты планет · свободный полёт',
     credits: 'карты планет: Solar System Scope · панорама неба: ESO/S. Brunier · звёзды: d3-celestial (Hipparcos) — CC BY 4.0',
@@ -643,6 +710,9 @@ const I18N = {
     today: 'Сегодня', date: 'Дата', pause: 'Пауза', play: 'Дальше', back: 'Назад', fwd: 'Вперёд',
     dateOut: 'Дата вне поддерживаемого диапазона', safe: 'Безопасное исследование',
     safeOn: 'безопасный режим включён', safeOff: 'обычная механика',
+    bhPreviewOn: 'Осмотр чёрной дыры: опасности временно отключены. Настройки не изменены.',
+    bhPreviewExit: 'Завершить осмотр (Esc)',
+    bhPreviewChoice: 'Выбранный режим: {0}',
     statFlight: 'Перелёт · {0}', hintSkip: 'Esc — пропустить', toastFlightSkip: 'перелёт пропущен',
     views: 'Закладки видов', bmPlaceholder: 'Название вида', bmSave: 'Сохранить', bmCopy: 'Скопировать ссылку',
     bmEmpty: 'Пока нет сохранённых видов', bmRename: 'Переименовать', bmDelete: 'Удалить',
@@ -661,7 +731,8 @@ const I18N = {
     realSky: 'Реальное небо', consts: 'Созвездия', constNames: 'Названия созвездий',
     sound: 'Эмбиент', volume: 'Громкость',
     exposure: 'Экспозиция', fov: 'Поле зрения', bloom: 'Свечение',
-    quality: 'Качество', qAuto: 'Авто', qFull: 'Полное', qLow: 'Эконом',
+    quality: 'Качество', qAuto: 'Авто', qFull: 'Максимальное', qLow: 'Низкое',
+    simpleRocks: 'Простые одинаковые астероиды · меньше нагрузка',
     goto: 'Перейти', note: 'Tab — спрятать всё · H — телеметрия · G — двигатель · M — звук',
     physGravity: 'Притяжение', physAtm: 'Атмосфера', physWater: 'Вода', physTemp: 'Температура',
     physRadius: 'Радиус', physDay: 'Сутки', physSize: 'Размер', physPeriod: 'Период', physPhase: 'Фаза с Земли', physOrb: 'Орбита',
@@ -691,6 +762,28 @@ const I18N = {
     fateAsteroid: 'астероид · удар без торможения',
   },
   en: {
+    shipMenu: "Ship",
+    graphicsMenu: "Graphics",
+    sceneMenu: "Scene",
+    audioMenu: "Audio",
+    interfaceMenu: "Interface",
+    helpMenu: "Guide and controls",
+    closeMenu: "Close menu",
+    qMedium: "Medium",
+    guideTitle: "Your first flight",
+    guideIntro: "The Solar System is open for exploration. Start with Earth or find your next destination.",
+    guideMove: "Fly · Q / E — down and up",
+    guideClick: "Click + mouse",
+    guideLook: "Look around · Esc — release mouse",
+    guideWheel: "Wheel",
+    guideSpeed: "Change speed · Shift — boost",
+    guideFind: "Find a planet and fly to it",
+    guideSettings: "Settings · Ship — navigation and time",
+    guideMore: "More controls",
+    guideCommands: "1–8 — planets · 9 — Sun · 0 — Moon · T — track · V — overview · B — black hole · R — escape · M — audio · Tab — interface",
+    guideTip: "Enable Safe exploration in the Ship menu for a relaxed flight. Choose Low graphics in Settings if motion is slow.",
+    guideRepeat: "Show on startup",
+    guideStart: "Start exploring",
     boot: 'Assembling the system',
     sub: 'real planet maps · free flight',
     credits: 'planet maps: Solar System Scope · sky panorama: ESO/S. Brunier · stars: d3-celestial (Hipparcos) — CC BY 4.0',
@@ -701,6 +794,9 @@ const I18N = {
     today: 'Today', date: 'Date', pause: 'Pause', play: 'Resume', back: 'Back', fwd: 'Forward',
     dateOut: 'Date is outside the supported range', safe: 'Safe exploration',
     safeOn: 'safe mode enabled', safeOff: 'normal mechanics',
+    bhPreviewOn: 'Black-hole preview: hazards temporarily disabled. Settings are unchanged.',
+    bhPreviewExit: 'End preview (Esc)',
+    bhPreviewChoice: 'Selected mode: {0}',
     statFlight: 'Flying to · {0}', hintSkip: 'Esc — skip', toastFlightSkip: 'flight skipped',
     views: 'View bookmarks', bmPlaceholder: 'View name', bmSave: 'Save', bmCopy: 'Copy view link',
     bmEmpty: 'No saved views yet', bmRename: 'Rename', bmDelete: 'Delete',
@@ -720,7 +816,8 @@ const I18N = {
     realSky: 'Real sky', consts: 'Constellations', constNames: 'Constellation names',
     sound: 'Ambient', volume: 'Volume',
     exposure: 'Exposure', fov: 'Field of view', bloom: 'Bloom',
-    quality: 'Quality', qAuto: 'Auto', qFull: 'Full', qLow: 'Eco',
+    quality: 'Quality', qAuto: 'Auto', qFull: 'Maximum', qLow: 'Low',
+    simpleRocks: 'Simple uniform asteroids · lower GPU load',
     goto: 'Go to', note: 'Tab — hide UI · H — telemetry · G — engine · M — sound',
     physGravity: 'Gravity', physAtm: 'Atmosphere', physWater: 'Water', physTemp: 'Temperature',
     physRadius: 'Radius', physDay: 'Day', physSize: 'Size', physPeriod: 'Period', physPhase: 'Phase (Earth)', physOrb: 'Orbit',
@@ -791,11 +888,25 @@ const WALL = PARAMS.has('wall');   // режим обоев: без интерф
 const SET = {
   orbits: true, labels: true, belt: true, rings: true, night: true, small: true, trojans: true, hilda: true, kuiper: true, deep: false, bh: true,
   phys: true, realSky: true, consts: true, constNames: true,
-  engineHud: true, safe: false,
+  engineHud: true, safe: false, simpleRocks: false,
   wallTargets: ['Солнце', 'Земля', 'Юпитер', 'Сатурн', 'Марс', 'Нептун', 'Уран'],
   wallDwell: 45, wallOrbit: 0.055, wallFps: 30,
   exposure: 1.0, fov: 0.62, bloom: 0.34, quality: 'auto',
 };
+// Временный осмотр не входит в SET и никогда не сохраняется.
+let bhPreview = null;
+function safeActive() {
+  return SET.safe || bhPreview !== null;
+}
+function syncBHPreviewUI() {
+  $('bhPreviewNotice').hidden = bhPreview === null;
+  $('bhPreviewChoice').textContent = T('bhPreviewChoice', T(SET.safe ? 'safeOn' : 'safeOff'));
+}
+function endBHPreview() {
+  bhPreview = null;
+  syncBHPreviewUI();
+}
+$('bhPreviewExit').addEventListener('click', endBHPreview);
 
 // ============================================================ модель системы
 // Расстояния сжаты (AU^0.62), радиусы тоже (R⊕^0.55): иначе систему не облететь.
@@ -1117,6 +1228,171 @@ fn h33(p: vec3f) -> vec3f {
   return fract((q.xxy + q.yzz) * q.zyx);
 }`;
 
+// Общий марш чёрной дыры: им пользуются и сама сцена, и орбиты.
+const BH_MASK = /* wgsl */`
+const BH_POS = vec3f(33250.0, 11400.0, -88350.0);
+const BH_R = 900.0;
+fn bhMaskRay(ro: vec3f, rd: vec3f) -> f32 {
+  let oc = BH_POS - ro;
+  let b = max(dot(oc, rd), 0.0);
+  let d2 = max(dot(oc, oc) - b * b, 0.0);
+  // Значение и производная равны нулю на границе. Внутри сферы
+  // лучи, направленные от центра, тоже участвуют в эффекте.
+  return 1.0 - smoothstep(0.84, 1.0, sqrt(d2) / (BH_R * 5.2));
+}`;
+const BH_COMMON = /* wgsl */`
+${BH_MASK}
+const BH_FAR = 400000.0;
+const BH_SPIN = 1.0;
+const BH_OMEGA = 0.85;
+
+struct BHState { col: vec3f, depth: f32, alpha: f32, dir: vec3f };
+
+fn bhHash(p: vec2f) -> f32 {
+  var q = fract(p * vec2f(0.1031, 0.1030));
+  q += dot(q, q.yx + 33.33);
+  return fract((q.x + q.y) * q.x);
+}
+
+fn bhNoise(p: vec2f) -> f32 {
+  let i = floor(p);
+  let f = fract(p);
+  let u = f * f * (3.0 - 2.0 * f);
+  let a = bhHash(i);
+  let b = bhHash(i + vec2f(1.0, 0.0));
+  let c = bhHash(i + vec2f(0.0, 1.0));
+  let d = bhHash(i + vec2f(1.0, 1.0));
+  return mix(mix(a, b, u.x), mix(c, d, u.x), u.y);
+}
+
+fn bhFbm(p: vec2f, oct: i32) -> f32 {
+  var q = p;
+  var amp = 0.5;
+  var sum = 0.0;
+  for (var i = 0; i < oct; i++) {
+    sum += amp * bhNoise(q);
+    q = q * 2.03 + vec2f(17.1, 9.7);
+    amp *= 0.5;
+  }
+  return sum / max(1.0 - pow(0.5, f32(oct)), 0.0001);
+}
+
+// Интеграл компактного вертикального профиля (1-u²)², |u| < 1.
+// Аналитическая разность устойчива и для пересечения плоскости, и вдоль неё.
+fn bhDiskPrimitive(y: f32) -> f32 {
+  let u = clamp(y, -1.0, 1.0);
+  return u - (2.0 / 3.0) * u * u * u + 0.2 * u * u * u * u * u;
+}
+
+// Один и тот же трассировщик для пикселя, орбиты и (через порт) подписи.
+// depth — первая преграда (тень или передняя кромка диска), alpha — суммарное
+// поглощение диска, col — premultiplied цвет диска.
+// detail = 0 — считать только depth/alpha (орбиты), >0 — добавить газ.
+fn bhOcclusion(ro: vec3f, rd: vec3f, time: f32, steps: i32, detail: i32) -> BHState {
+  let C = BH_POS;
+  if (length(ro - C) < BH_R * 0.58) { return BHState(vec3f(0.0), 1.0, 1.0, rd); }
+  let oc = C - ro;
+  let b = dot(oc, rd);
+  let d2 = dot(oc, oc) - b * b;
+  let lim = BH_R * 11.0;
+  if (bhMaskRay(ro, rd) <= 0.0) { return BHState(vec3f(0.0), BH_FAR, 0.0, rd); }
+  // До входа в область интегрирования луч идёт по прямой и не тратит шаги.
+  let entry = max(0.0, b - sqrt(max(lim * lim - d2, 0.0)));
+  var p = ro + rd * entry;
+  var dir = rd;
+  var col = vec3f(0.0);
+  var trns = 1.0;
+  var captured = false;
+  var escaped = false;
+  var capDepth = BH_FAR;
+  var diskDepth = BH_FAR;
+  for (var i = 0; i < 384; i++) {
+    if (i >= steps) { break; }
+    let rel = p - C;
+    let r = length(rel);
+    let height = BH_R * 0.02;
+    let baseDt = clamp(r * 0.07, BH_R * 0.004, BH_R * 0.20);
+    let band = height + baseDt * (abs(dir.y) + 0.1);
+    let nearDisk = 1.0 - smoothstep(band, band * 2.0, abs(rel.y));
+    let dt = mix(baseDt, min(baseDt, height * 0.65 / (abs(dir.y) + 0.03)), nearDisk);
+    let prev = p;
+    let force = 1.0 - smoothstep(BH_R * 8.0, lim, r);
+    dir = normalize(dir - normalize(rel) * (force * BH_R * 1.15 * dt / (r * r)));
+    p += dir * dt;
+    let y0 = (prev - C).y;
+    let y1 = (p - C).y;
+    if (min(y0, y1) < height && max(y0, y1) > -height) {
+      let hit = mix(prev, p, 0.5);
+      let px = hit - C;
+      let rr = length(px.xz);
+      let inner = BH_R * 1.45;
+      let outer = BH_R * 4.6;
+      if (rr > inner && rr < outer) {
+        let t = clamp((rr - inner) / (outer - inner), 0.0, 1.0);
+        // оптическая толщина остаётся гладкой: её видят орбиты и подписи
+        let radial = smoothstep(0.0, 0.05, t) * (1.0 - smoothstep(0.62, 1.0, t)) * 0.9;
+        let u0 = y0 / height;
+        let u1 = y1 / height;
+        var profile = pow(max(0.0, 1.0 - pow((u0 + u1) * 0.5, 2.0)), 2.0);
+        if (abs(u1 - u0) > 0.001) {
+          profile = (bhDiskPrimitive(u1) - bhDiskPrimitive(u0)) / (u1 - u0);
+        }
+        let column = max(0.0, profile) * dt / height * (15.0 / 16.0);
+        let al = 1.0 - exp(log(max(1.0 - radial * 0.5, 0.001)) * column);
+        if (detail > 0) {
+          let rn = max(rr / BH_R, 1.0);
+          let ang = atan2(px.z, px.x);
+          let om = BH_OMEGA * pow(rn, -1.5);
+          let a = ang - BH_SPIN * om * time;
+          let lr = log(rn);
+          let spiral = a + lr * 1.6;
+          let q1 = vec2f(cos(spiral), sin(spiral)) * 0.85 + vec2f(lr * 7.0, -lr * 3.0);
+          let q2 = vec2f(cos(a * 2.0 + 1.7 - lr * 2.0), sin(a * 2.0 + 1.7 - lr * 2.0)) * 1.9
+                 + vec2f(lr * 13.0, lr * 6.0);
+          let n1 = bhFbm(q1, detail);
+          let n2 = bhFbm(q2, detail);
+          let turb = n1 * 0.62 + n2 * 0.38;
+          let lanes = smoothstep(0.28, 0.72, turb);
+          let thread = pow(clamp(1.0 - abs(n2 * 2.0 - 1.0), 0.0, 1.0), 3.0);
+          let dens = clamp(0.18 + 1.05 * lanes + 0.50 * thread, 0.0, 1.45);
+          let env = smoothstep(0.0, 0.10, t) * (1.0 - smoothstep(0.76, 1.0, t));
+          let heat = mix(1.35, 0.14, pow(t, 0.85));
+          // приближающаяся сторона ярче; сторона зависит от камеры и BH_SPIN
+          let tang = normalize(vec3f(-px.z, 0.0, px.x)) * BH_SPIN;
+          let vx = -dir.x;
+          let vz = -dir.z;
+          let vl = max(length(vec2f(vx, vz)), 0.0001);
+          let view = vec3f(vx / vl, 0.0, vz / vl);
+          let mu = dot(tang, view);
+          let beam = clamp(1.0 + 0.75 * mu, 0.38, 1.75);
+          var em = mix(vec3f(1.0, 0.95, 0.88), vec3f(0.86, 0.27, 0.05),
+                       smoothstep(0.0, 0.90, t));
+          em = mix(vec3f(0.82, 0.92, 1.0), em, smoothstep(0.0, 0.16, t));
+          let beamTint = mix(vec3f(1.0, 0.86, 0.74), vec3f(0.84, 0.92, 1.0),
+                             clamp(mu * 0.5 + 0.5, 0.0, 1.0) * 0.55);
+          em *= beamTint;
+          let I = env * dens * heat * (0.50 + 0.80 * thread) * pow(beam, 1.55);
+          // мягкий roll-off сохраняет прожилки газа в яркой стороне
+          let e = I / (1.0 + 0.80 * I);
+          col += em * (e * 1.9 * al * trns);
+        }
+        trns *= 1.0 - al;
+        if (al > 0.000001 && diskDepth >= BH_FAR) { diskDepth = length(hit - ro); }
+      }
+    }
+    let rn = length(p - C);
+    if (rn < BH_R) { captured = true; capDepth = length(p - ro); break; }
+    if (rn >= lim && dot(p - C, dir) > 0.0) { escaped = true; break; }
+  }
+  col = min(col, vec3f(2.2));
+  let alpha = 1.0 - trns;
+  // Застрявший у критической орбиты луч не является лучом к небу.
+  if (!escaped && !captured) { captured = true; capDepth = length(p - ro); }
+  if (captured) { return BHState(col, capDepth, 1.0, dir); }
+  if (diskDepth < BH_FAR) { return BHState(col, diskDepth, alpha, dir); }
+  return BHState(vec3f(0.0), BH_FAR, 0.0, dir);
+}`;
+
 const SCENE = /* wgsl */`
 struct U {
   cam: vec4f,     // xyz позиция, w время
@@ -1174,8 +1450,7 @@ fn sphUV(n: vec3f, axis: vec3f, spin: f32) -> vec2f {
 }
 
 // ============================================================ чёрная дыра
-const BH_POS = vec3f(33250.0, 11400.0, -88350.0);
-const BH_R = 900.0;
+${BH_COMMON}
 
 fn skySample(dir: vec3f, time: f32) -> vec3f {
   let su = atan2(dir.z, dir.x) / TAU + 0.5 + 0.27;
@@ -1185,56 +1460,14 @@ fn skySample(dir: vec3f, time: f32) -> vec3f {
   return c;
 }
 
-// марш с искривлением луча к центру: тень, фотонное кольцо, диск с доплером
-fn bhRender(ro: vec3f, rd: vec3f, time: f32) -> vec3f {
-  let C = BH_POS;
-  // за горизонтом событий не видно ничего
-  if (length(ro - C) < BH_R * 0.58) { return vec3f(0.0); }
-  let oc = C - ro;
-  let b = dot(oc, rd);
-  let d2 = dot(oc, oc) - b * b;
-  let lim = BH_R * 11.0;
-  if (b < 0.0 || d2 > lim * lim) { return skySample(rd, time); }
-  var p = ro;
-  var dir = rd;
-  var col = vec3f(0.0);
-  var trns = 1.0;
-  var captured = false;
-  for (var i = 0; i < 120; i++) {
-    let rel = p - C;
-    let r = length(rel);
-    let dt = clamp(r * 0.07, BH_R * 0.004, BH_R * 0.20);
-    let prev = p;
-    dir = normalize(dir - normalize(rel) * (BH_R * 1.15 * dt / (r * r)));
-    p += dir * dt;
-    // точное пересечение плоскости диска — без полос от грубого шага
-    let y0 = (prev - C).y;
-    let y1 = (p - C).y;
-    if (y0 * y1 < 0.0) {
-      let f = y0 / (y0 - y1);
-      let px = mix(prev, p, f) - C;
-      let rr = length(px.xz);
-      let inner = BH_R * 1.45;
-      let outer = BH_R * 4.6;
-      if (rr > inner && rr < outer) {
-        let t = clamp((rr - inner) / (outer - inner), 0.0, 1.0);
-        let tang = normalize(vec3f(-px.z, 0.0, px.x));
-        let dop = 1.0 + 0.55 * dot(tang, normalize(vec3f(rd.x, 0.0, rd.z)));
-        // гладкие кольцевые полосы: хеш по клеткам вблизи давал «шахматку»
-        let bands = 0.72 + 0.28 * sin(rr * 0.021) * sin(rr * 0.0067 + 1.3);
-        let em = mix(vec3f(1.0, 0.96, 0.92), vec3f(1.0, 0.45, 0.15), t);
-        let heat = mix(1.0, 0.30, t);
-        let al = smoothstep(0.0, 0.05, t) * (1.0 - smoothstep(0.62, 1.0, t)) * 0.9;
-        col += em * (heat * 0.55 * dop * (0.40 + 0.90 * bands)) * al * trns;
-        trns *= 1.0 - al * 0.5;
-      }
-    }
-    let rn = length(p - C);
-    if (rn < BH_R) { captured = true; break; }
-    if (rn > BH_R * 16.0) { break; }
-  }
-  if (!captured) { col += skySample(dir, time) * trns; }
-  return col;
+// марш с искривлением луча: цвет/глубина/альфа для отдельного прохода
+struct BHOut { col: vec3f, depth: f32, alpha: f32 };
+fn bhRender(ro: vec3f, rd: vec3f, time: f32, background: bool) -> BHOut {
+  let low = (u32(u.misc.w + 0.5) & 512u) != 0u;
+  let s = bhOcclusion(ro, rd, time, 384, select(3, 2, low));
+  // Небо присутствует и у луча, задевшего газ: тот же выходной dir и пропускание.
+  if (background) { return BHOut(s.col + skySample(s.dir, time) * (1.0 - s.alpha), BH_FAR, 1.0); }
+  return BHOut(s.col, s.depth, s.alpha);
 }
 
 fn stars(d: vec3f, time: f32) -> vec3f {
@@ -1486,10 +1719,10 @@ struct FragOut { @location(0) color: vec4f, @builtin(frag_depth) depth: f32 };
   var depthT = FAR;
 
   let flags = u32(u.misc.w + 0.5);
-  // небо; если в кадре чёрная дыра — луч идёт через её гравитацию
+  let bhOn = (flags & 16u) != 0u;
+  // небо; чёрная дыра рисуется отдельным проходом поверх сцены
   var col = skySample(rd, time);
-  if ((flags & 16u) != 0u) { col = bhRender(ro, rd, time); }
-  // глубокое поле: объёмные звёзды с параллаксом (для обоев и дальних планов)
+  // глубокое звёздное поле: объёмные звёзды с параллаксом (для обоев и дальних планов)
   if ((flags & 8u) != 0u) {
     col += deepStarsWarped(ro, rd, ndc);
   }
@@ -1524,6 +1757,10 @@ struct FragOut { @location(0) color: vec4f, @builtin(frag_depth) depth: f32 };
     if (rr.t < depthT) { depthT = rr.t; }
   }
 
+  // глубина заметных экранных свечений: хвосты, атмосферы, ореол Солнца.
+  // Без неё проход дыры считал бы такие пиксели фоном и стирал их.
+  var fxDepth = FAR;
+
   // атмосферное гало: мягкое свечение сразу за лимбом (Земля, Венера, Титан, Марс, гиганты)
   for (var i = 0; i < NB; i++) {
     let b = bodies[i];
@@ -1544,7 +1781,9 @@ struct FragOut { @location(0) color: vec4f, @builtin(frag_depth) depth: f32 };
     let cp = ro + rd * tca;
     let uout = normalize(cp - b.pos.xyz);
     let sunL = max(dot(uout, normalize(-b.pos.xyz)), 0.0);
-    col += ac.rgb * (k * ac.w * 0.95 * (0.12 + 0.88 * sunL));
+    let ga = k * ac.w * 0.95 * (0.12 + 0.88 * sunL);
+    col += ac.rgb * ga;
+    if (bhOn && ga > 0.002) { fxDepth = min(fxDepth, tca); }
   }
 
   // хвосты комет: два экранных отрезка — ионный (синий, узкий) и пылевой (тёплый, широкий)
@@ -1567,7 +1806,11 @@ struct FragOut { @location(0) color: vec4f, @builtin(frag_depth) depth: f32 };
         let g = exp(-d * d / (w * w)) * pow(1.0 - t, 1.6) * c.ion.w;
         // точка хвоста за планетой не светит
         let pw = mix(c.head.xyz, c.ion.xyz, t);
-        if (length(pw - ro) <= depthT) { col += vec3f(0.42, 0.68, 1.0) * g * 0.65; }
+        let td = length(pw - ro);
+        if (td <= depthT) {
+          col += vec3f(0.42, 0.68, 1.0) * g * 0.65;
+          if (bhOn && g > 0.002) { fxDepth = min(fxDepth, td); }
+        }
       }
     }
     if (c.dust.w > 0.001) {
@@ -1581,12 +1824,20 @@ struct FragOut { @location(0) color: vec4f, @builtin(frag_depth) depth: f32 };
         let w = 0.010 + t * 0.045;
         let g = exp(-d * d / (w * w)) * pow(1.0 - t, 1.8) * c.dust.w;
         let pw = mix(c.head.xyz, c.dust.xyz, t);
-        if (length(pw - ro) <= depthT) { col += vec3f(1.0, 0.82, 0.62) * g * 0.35; }
+        let td = length(pw - ro);
+        if (td <= depthT) {
+          col += vec3f(1.0, 0.82, 0.62) * g * 0.35;
+          if (bhOn && g > 0.002) { fxDepth = min(fxDepth, td); }
+        }
       }
     }
     let dh = length(ndc - a);
     let coma = exp(-dh * dh / 0.00045) * 0.9 * max(c.ion.w, c.dust.w);
-    if (length(rh) <= depthT) { col += vec3f(0.80, 0.88, 1.0) * coma; }
+    let td = length(rh);
+    if (td <= depthT) {
+      col += vec3f(0.80, 0.88, 1.0) * coma;
+      if (bhOn && coma > 0.002) { fxDepth = min(fxDepth, td); }
+    }
   }
 
   // ореол вокруг Солнца: угловой радиус считается из расстояния.
@@ -1599,12 +1850,53 @@ struct FragOut { @location(0) color: vec4f, @builtin(frag_depth) depth: f32 };
     let d = max(ang - sunAng, 0.0);
     // ширина ореола привязана к угловому размеру солнца: вдали оно гаснет вместе с диском
     let wHalo = sunAng * 1.0 + 0.0025;
-    col += vec3f(1.0, 0.93, 0.80) * (exp(-d / wHalo) * 0.35 + exp(-d / (wHalo * 4.0)) * 0.035);
+    let halo = exp(-d / wHalo) * 0.35 + exp(-d / (wHalo * 4.0)) * 0.035;
+    col += vec3f(1.0, 0.93, 0.80) * halo;
+    // яркая часть ореола — физическое свечение на глубине Солнца, не фон
+    if (bhOn && halo > 0.05) { fxDepth = min(fxDepth, dSun); }
   }
+
+  // экранные свечения не должны считаться фоном при подстановке линзированного неба
+  depthT = min(depthT, fxDepth);
 
   var out: FragOut;
   out.color = vec4f(col, 1.0);
   out.depth = clamp(depthT / FAR, 0.0, 1.0);
+  return out;
+}
+
+// Отдельный проход чёрной дыры поверх остальных слоёв: диск и линзированный фон
+// смешиваются с уже нарисованной сценой по глубине, поэтому тела перед дырой
+// остаются видимыми, а за тенью — полностью перекрыты.
+@group(1) @binding(0) var bhSceneDepth: texture_depth_2d;
+@fragment fn fsBH(@builtin(position) fp: vec4f) -> FragOut {
+  let uv = fp.xy * u.res.zw;
+  let ndc = vec2f(uv.x * 2.0 - 1.0, 1.0 - uv.y * 2.0);
+  let ro = u.cam.xyz;
+  let time = u.cam.w;
+  let rd = normalize(u.fwd.xyz + u.right.xyz * ndc.x * u.right.w + u.up.xyz * ndc.y * u.up.w);
+  let weight = bhMaskRay(ro, rd);
+  if (weight <= 0.0) { discard; }
+  // Глубина уже готовой сцены различает небо и физический объект за газом.
+  // Текстура одновременно доступна depth-test только для чтения.
+  let background = textureLoad(bhSceneDepth, vec2i(fp.xy), 0) >= 1.0;
+  let bh = bhRender(ro, rd, time, background);
+  var col = bh.col;
+  var alpha = bh.alpha;
+  var d = bh.depth;
+  if (d >= FAR) {
+    // Линзированный фон подставляется только на глубину неба (1.0): физические
+    // объекты с меньшей глубиной проходят depth-test и не заменяются.
+    alpha = weight;
+    d = FAR;
+    col *= alpha;
+  } else {
+    col *= weight;
+    alpha *= weight;
+  }
+  var out: FragOut;
+  out.color = vec4f(col, alpha);
+  out.depth = clamp(d / FAR, 0.0, 1.0);
   return out;
 }`;
 
@@ -1694,7 +1986,7 @@ fn h21(p: vec2f) -> f32 {
     textureSampleLevel(scene, samp, uv + vec2f(ca, 0.0), 0.0).r,
     textureSampleLevel(scene, samp, uv, 0.0).g,
     textureSampleLevel(scene, samp, uv - vec2f(ca, 0.0), 0.0).b);
-  c += textureSampleLevel(bloom, samp, uv, 0.0).rgb * u.misc.x;
+  if (u.misc.x > 0.0) { c += textureSampleLevel(bloom, samp, uv, 0.0).rgb * u.misc.x; }
   c *= u.fwd.w;
   c = aces(c);
   c = pow(max(c, vec3f(0.0)), vec3f(1.0 / 2.2));
@@ -1828,6 +2120,10 @@ const bglFinal = device.createBindGroupLayout({ entries: [
 
 const mScene = mod(SCENE), mBlit = mod(BLIT), mFinal = mod(FINAL);
 const plScene = device.createPipelineLayout({ bindGroupLayouts: [bglScene] });
+const bglBH = device.createBindGroupLayout({ entries: [
+  { binding: 0, visibility: SS.FRAGMENT, texture: { sampleType: 'depth' } },
+] });
+const plBH = device.createPipelineLayout({ bindGroupLayouts: [bglScene, bglBH] });
 const plBlit = device.createPipelineLayout({ bindGroupLayouts: [bglBlit] });
 const plFinal = device.createPipelineLayout({ bindGroupLayouts: [bglFinal] });
 
@@ -1836,6 +2132,19 @@ const pScene = device.createRenderPipeline({
   fragment: { module: mScene, entryPoint: 'fs', targets: [{ format: HDR }] },
   primitive: { topology: 'triangle-list' },
   depthStencil: { format: 'depth32float', depthWriteEnabled: true, depthCompare: 'always' },
+});
+// чёрная дыра: premultiplied alpha поверх сцены, без записи глубины
+const pBH = device.createRenderPipeline({
+  layout: plBH, vertex: { module: mScene, entryPoint: 'vs' },
+  fragment: { module: mScene, entryPoint: 'fsBH', targets: [{
+    format: HDR,
+    blend: {
+      color: { srcFactor: 'one', dstFactor: 'one-minus-src-alpha', operation: 'add' },
+      alpha: { srcFactor: 'one', dstFactor: 'one-minus-src-alpha', operation: 'add' },
+    },
+  }] },
+  primitive: { topology: 'triangle-list' },
+  depthStencil: { format: 'depth32float', depthWriteEnabled: false, depthCompare: 'less-equal' },
 });
 const mkBlit = (entry, add) => device.createRenderPipeline({
   layout: plBlit, vertex: { module: mBlit, entryPoint: 'vs' },
@@ -1853,21 +2162,15 @@ const pFinal = device.createRenderPipeline({
 
 // ============================================================ пояс астероидов
 const BELT_N = 4200;
+const ROCK_STRIDE = 24;
 const BELT = /* wgsl */`
 struct U { cam: vec4f, right: vec4f, up: vec4f, fwd: vec4f, res: vec4f, misc: vec4f, sun: vec4f };
 @group(0) @binding(0) var<uniform> u: U;
 @group(0) @binding(1) var<uniform> orbit: vec4f;   // x: дни, y: константа Кеплера
 const FAR = 400000.0;
 const TAU_B = 6.28318531;
+const ROCK_BOUND = 1.9;
 ${NOISE}
-
-struct VOut {
-  @builtin(position) pos: vec4f,
-  @location(0) uv: vec2f,
-  @location(1) lv: vec3f,   // направление на Солнце в осях камеры
-  @location(2) seed: f32,
-  @location(3) glow: f32,
-};
 
 // Пояс не «стоит»: каждый камень едет по своей орбите с ω ∝ r^-1.5, как планеты.
 // У троянцев размер отрицательный — их положение пересчитывает CPU вслед за Юпитером.
@@ -1881,17 +2184,384 @@ fn orbitPos(p: vec3f, size: f32) -> vec3f {
   return vec3f(p.x * ca - p.z * sa, p.y, p.x * sa + p.z * ca);
 }
 
-@vertex fn vs(@builtin(vertex_index) vi: u32, @location(0) ip: vec4f, @location(1) ex: vec4f) -> VOut {
+fn rotAxis(p: vec3f, ax: vec3f, a: f32) -> vec3f {
+  let c = cos(a);
+  let s = sin(a);
+  return p * c + cross(ax, p) * s + ax * dot(ax, p) * (1.0 - c);
+}
+
+fn noise3(p: vec3f) -> f32 {
+  let i = floor(p);
+  let f = fract(p);
+  let u = f * f * (3.0 - 2.0 * f);
+  let a = h31(i);
+  let b = h31(i + vec3f(1.0, 0.0, 0.0));
+  let c = h31(i + vec3f(0.0, 1.0, 0.0));
+  let d = h31(i + vec3f(1.0, 1.0, 0.0));
+  let e = h31(i + vec3f(0.0, 0.0, 1.0));
+  let f1 = h31(i + vec3f(1.0, 0.0, 1.0));
+  let g = h31(i + vec3f(0.0, 1.0, 1.0));
+  let k = h31(i + vec3f(1.0, 1.0, 1.0));
+  return mix(mix(mix(a, b, u.x), mix(c, d, u.x), u.y),
+             mix(mix(e, f1, u.x), mix(g, k, u.x), u.y), u.z);
+}
+
+fn sdEllipsoid(p: vec3f, r: vec3f) -> f32 {
+  let q=p/r;let k0=length(q);let k1=length(q/r);
+  if(k0<0.00001){return -min(r.x,min(r.y,r.z));}
+  return k0*(k0-1.0)/max(k1,0.0001);
+}
+
+fn sdRoundBox(p: vec3f, b: vec3f, r: f32) -> f32 {
+  let q = abs(p) - b + r;
+  return length(max(q, vec3f(0.0))) + min(max(q.x, max(q.y, q.z)), 0.0) - r;
+}
+
+// Низкополигональная база: глыба, вытянутое/сплюснутое тело, контактная двойная.
+fn sdRockBase(p: vec3f, sx: f32, sy: f32, sz: f32, fam: f32, lobe: f32, lobeScale: f32, seed: f32) -> f32 {
+  if (fam < 0.5) {
+    // Перекошенный округло-клиновидный обломок, без прямоугольных боковин.
+    let q=p/vec3f(sx,sy,sz)-vec3f(0.04*(seed-0.5),-0.025,0.03);
+    let v=vec3f(q.x+0.12*q.y,q.y-0.06*q.z,q.z+0.08*q.x);
+    let radial=0.65*length(v)+0.35*dot(abs(v),vec3f(0.95,1.10,0.90));
+    let fragment=(radial-0.98)*min(sx,min(sy,sz))*0.9;
+    // Ограничитель лишь узких выступающих концов, не прямоугольная основа.
+    let half=vec3f(sx,sy,sz)*0.86+0.05;
+    let tip=max(abs(p).x-half.x,max(abs(p).y-half.y,abs(p).z-half.z));
+    return max(fragment,tip);
+  }
+  if (fam > 2.5 && fam < 3.5) {
+    let r = vec3f(sx, sy, sz) * lobeScale;
+    let lobes = min(sdEllipsoid(p - vec3f(lobe, 0.0, 0.0), r),
+                    sdEllipsoid(p + vec3f(lobe, 0.0, 0.0), r));
+    return min(lobes, sdEllipsoid(p, vec3f(lobe + r.x * 0.4, r.y * 0.38, r.z * 0.38)));
+  }
+  return sdEllipsoid(p, vec3f(sx, sy, sz));
+}
+
+// Large chips + two scales of irregularity, fixed in object space.
+// радиус базовой поверхности вдоль направления: центры сколов и кратеров
+// должны лежать на поверхности, иначе вычитаемая сфера остаётся внутри тела
+fn rockSurfaceRadius(dir: vec3f, sx: f32, sy: f32, sz: f32, fam: f32) -> f32 {
+  let ad = abs(dir);
+  if (fam < 0.5) {
+    let q=dir/vec3f(sx,sy,sz);
+    let v=vec3f(q.x+0.12*q.y,q.y-0.06*q.z,q.z+0.08*q.x);
+    let radial=0.65*length(v)+0.35*dot(abs(v),vec3f(0.95,1.10,0.90));
+    return min(0.98/max(radial,0.001),min((sx*0.86+0.05)/max(ad.x,0.001),
+               min((sy*0.86+0.05)/max(ad.y,0.001),(sz*0.86+0.05)/max(ad.z,0.001))));
+  }
+  return 1.0 / max(length(vec3f(dir.x / sx, dir.y / sy, dir.z / sz)), 0.0001);
+}
+
+// Параметры рельефа вычисляются один раз на луч, а не на каждом шаге марша.
+var<private> rockCachedSeed: f32 = -1.0;
+var<private> rockBulkCell: array<vec3f,2>;
+var<private> rockBulkA: array<vec4f,2>;
+var<private> rockBulkB: array<vec4f,2>;
+var<private> rockBulkValid: array<bool,2>;
+// Тот же value noise: восемь хешей пересчитываются только при смене ячейки.
+// Кэш локален одному лучу, без дополнительных текстур и квантизации.
+fn rockBulkNoise(p:vec3f,layer:i32)->f32 {
+  let cell=floor(p);
+  if(!rockBulkValid[layer] || any(cell!=rockBulkCell[layer])) {
+    rockBulkCell[layer]=cell;rockBulkValid[layer]=true;
+    rockBulkA[layer]=vec4f(h31(cell),h31(cell+vec3f(1,0,0)),h31(cell+vec3f(0,1,0)),h31(cell+vec3f(1,1,0)));
+    rockBulkB[layer]=vec4f(h31(cell+vec3f(0,0,1)),h31(cell+vec3f(1,0,1)),h31(cell+vec3f(0,1,1)),h31(cell+vec3f(1,1,1)));
+  }
+  let f=fract(p);let u=f*f*(3.0-2.0*f);
+  let a=rockBulkA[layer];let b=rockBulkB[layer];
+  return mix(mix(mix(a.x,a.y,u.x),mix(a.z,a.w,u.x),u.y),mix(mix(b.x,b.y,u.x),mix(b.z,b.w,u.x),u.y),u.z);
+}
+var<private> rockChips: array<vec3f,4>;
+var<private> rockChipSize: array<vec2f,3>;
+var<private> rockCraters: array<vec4f,8>;
+var<private> rockCraterCount: i32;
+fn initRockRelief(seed:f32,detail:f32,fam:f32,axes:vec3f) {
+  if(rockCachedSeed==seed){return;}
+  rockCachedSeed=seed;
+  let dir1 = normalize(vec3f(h31(vec3f(seed, 1.1, 7.0)) - 0.5,
+                             h31(vec3f(seed, 4.7, 2.0)) - 0.5,
+                             h31(vec3f(seed, 8.3, 5.0)) - 0.5));
+  let dir2 = normalize(vec3f(h31(vec3f(seed, 9.1, 3.0)) - 0.5,
+                             h31(vec3f(seed, 2.3, 6.0)) - 0.5,
+                             h31(vec3f(seed, 5.7, 1.0)) - 0.5));
+  let dir3 = normalize(vec3f(h31(vec3f(seed, 3.1, 8.0)) - 0.5,
+                             h31(vec3f(seed, 7.7, 4.0)) - 0.5,
+                             h31(vec3f(seed, 1.9, 6.0)) - 0.5));
+  let dir4 = normalize(vec3f(h31(vec3f(seed, 6.3, 2.0)) - 0.5,
+                             h31(vec3f(seed, 2.7, 9.0)) - 0.5,
+                             h31(vec3f(seed, 8.1, 5.0)) - 0.5));
+  rockChips=array<vec3f,4>(dir1,dir2,dir3,dir4);
+  for(var k=0;k<3;k++){
+    let s=fract(seed*19.73+f32(k)*0.371);
+    rockChipSize[k]=vec2f(0.10+s*s*0.45,0.94-s*s*0.34);
+    if(detail>0.01 && !(fam>2.5&&fam<3.5)){
+      rockChipSize[k].y*=rockSurfaceRadius(rockChips[k],axes.x,axes.y,axes.z,fam)
+        *select(1.0,0.60,fam<0.5&&k==0);
+    }
+  }
+  let style=fract(seed*7.17);
+  rockCraterCount=select(select(4,8,style>0.42),2,style>0.78);
+  // Обломки преимущественно сколоты; круглые чаши не обязательны для всех типов.
+  if(fam<0.5){rockCraterCount=select(0,1,style<0.30);}
+  else if(fam<1.5){rockCraterCount=min(rockCraterCount,1);}
+  if(detail<=0.01){rockCraterCount=0;}
+  for(var k=0;k<8;k++){
+    if(k>=rockCraterCount){break;}
+    let s=seed+f32(k)*13.73;
+    let cy=1.0-2.0*(f32(k)+0.5)/f32(rockCraterCount);
+    let ca=f32(k)*2.39996323+seed*TAU_B;
+    let cr=sqrt(max(0.0,1.0-cy*cy));
+    let radius=select(0.25+0.25*h31(vec3f(s,6.1,1.3)),0.11+0.13*h31(vec3f(s,6.1,1.3)),style>0.42&&style<=0.78);
+    rockCraters[k]=vec4f(cos(ca)*cr,cy,sin(ca)*cr,radius);
+  }
+}
+fn sdRock(p: vec3f, sx: f32, sy: f32, sz: f32, fam: f32, seed: f32,
+          lobe: f32, lobeScale: f32, detail: f32) -> f32 {
+  initRockRelief(seed,detail,fam,vec3f(sx,sy,sz));
+  let baseD = sdRockBase(p, sx, sy, sz, fam, lobe, lobeScale, seed);
+  var d = baseD;
+  let axes = vec3f(sx, sy, sz);
+  let scaled=p/axes;
+  let direction=normalize(scaled+vec3f(0.00001));
+  let minAxis=min(sx,min(sy,sz));
+  // Крупная асимметрия и ломаные гребни входят в объём, а не в normal map.
+  // Только вычитание из исходной оболочки: прежние границы/коллизии консервативны.
+  let asym=smoothstep(0.05,0.80,dot(direction,rockChips[0])
+    +0.20*dot(direction,rockChips[1])*dot(direction,rockChips[2]));
+  let broad=rockBulkNoise(scaled*1.65+vec3f(seed*53.0),0);
+  var ridge=0.0;
+  if(detail>0.01){ridge=abs(rockBulkNoise(scaled*3.4+vec3f(seed*97.0),1)-0.48)*detail;}
+  let bulkCut=(0.02+select(0.16,0.11,fam<0.5)*asym+select(0.38,0.16,fam<0.5)*max(broad-0.38,0.0)+select(0.30,0.12,fam<0.5)*ridge)*minAxis;
+  let binary=fam>2.5&&fam<3.5;
+  d+=bulkCut*select(1.0,0.30,binary);
+  // Локальные сколы: плоскость действует только в конечном пятне с неровным краем.
+  // У глыб пятна крупнее и их больше; остальные семейства не ограняются целиком.
+  let chipCount=select(1,3,fam<0.5);
+  for(var k=0;k<3;k++){
+    if(k>=chipCount || binary || detail<=0.01){break;}
+    let axis=rockChips[k];
+    let chipWidth=rockChipSize[k].x*select(1.0,1.60,fam<0.5)*select(1.0,1.65,fam<0.5&&k==0);
+    let delta=direction-axis;
+    // Эллиптическое пятно с рваным краем не выходит за этот консервативный круг.
+    if(dot(delta,delta)>chipWidth*chipWidth*4.6){continue;}
+    let along=dot(delta,rockChips[(k+1)%4]);
+    if(fam<0.5){
+      // Вычитание конечного клина: плоские поверхности излома вместо плавной чаши.
+      // Ломаный многоугольный край и пересечение разных наклонов дают острые рёбра.
+      let across=dot(delta,rockChips[(k+2)%4]);
+      let edge=max(length(delta)*0.65,max(abs(along)*1.05,max(abs(across)*0.90,abs(along*0.62+across*0.85)*1.15)));
+      let anchor=axis*rockChipSize[k].y;
+      let fractureP=p-anchor;
+      let plane=dot(fractureP,axis+rockChips[(k+1)%4]*0.26);
+      let broken=max(plane,plane+dot(fractureP,rockChips[(k+2)%4])*0.65);
+      let footprint=(chipWidth-edge)*minAxis*0.9;
+      let cutter=min(broken,footprint);
+      d=max(d,mix(d,cutter,detail));
+    }else{
+      let jag=0.18*abs(dot(delta,rockChips[(k+2)%4]))-0.12*max(along,0.0);
+      let separation=sqrt(max(0.0,dot(delta,delta)-0.65*along*along))+jag;
+      let weight=(1.0-smoothstep(chipWidth*0.25,chipWidth,separation))*detail;
+      if(weight>0.0){
+        let anchor=axis*rockChipSize[k].y;
+        let fractureP=p-anchor;
+        let plane=dot(fractureP,axis+rockChips[(k+1)%4]*0.18);
+        let broken=max(plane,plane+dot(fractureP,rockChips[(k+2)%4])*0.35);
+        d+=max(broken-d,0.0)*weight;
+      }
+    }
+  }
+  // Геометрия чаши: ограниченное углубление, плоское дно и неровный вал.
+  // Для маленьких экранных размеров кратеры плавно уходят ниже пикселя.
+  if (detail > 0.01 && baseD < 0.4) {
+    let q = direction;
+    for (var k = 0; k < 8; k++) {
+      if (k >= rockCraterCount) { break; }
+      let s = seed + f32(k) * 13.73;
+      let c = rockCraters[k].xyz;
+      let radius = rockCraters[k].w;
+      let craterDelta=q-c;
+      let distanceSquared=dot(craterDelta,craterDelta);
+      // Большинство кратеров на обратной стороне: без sqrt/div до попадания в пятно.
+      if (distanceSquared < radius*radius*1.8225) {
+        let u=sqrt(distanceSquared)/radius;
+        let edge = u * (1.0 + 0.055 * sin(dot(q, rockChips[1]) * 39.0 + s * 12.0));
+        let bowl = (1.0 - smoothstep(0.10, 1.0, edge * edge)) * radius * 0.29;
+        let rim = exp(-pow((edge - 1.0) / 0.12, 2.0)) * radius * 0.055;
+        d += (bowl - rim) * detail;
+      }
+    }
+  }
+  // Никакой скол/кратер не удаляет защищённый внутренний объём.
+  let coreDepth=minAxis*select(0.55,lobeScale*0.15,binary);
+  return clamp(d, baseD - 0.045, baseD + coreDepth);
+}
+
+fn rockBound(sh: vec3f, fam: f32, lobe: f32, ls: f32) -> f32 {
+  if (fam < 0.5) { return length(sh * 0.86) + 0.10; }
+  if (fam > 2.5 && fam < 3.5) { return lobe + max(sh.x, max(sh.y, sh.z)) * ls + 0.10; }
+  return max(sh.x, max(sh.y, sh.z)) + 0.10;
+}
+
+struct RockTrace { t: f32, hit: bool, steps: i32, exhausted: bool };
+fn traceRock(ro: vec3f, rd: vec3f, sh: vec3f, fam: f32, seed: f32, lobe: f32, ls: f32, detail: f32, eps: f32) -> RockTrace {
+  let bound = rockBound(sh, fam, lobe, ls);
+  let b = dot(ro, rd);
+  let h = b * b - dot(ro, ro) + bound * bound;
+  if (h < 0.0 || -b + sqrt(max(h, 0.0)) < 0.0) { return RockTrace(0.0, false, 0, false); }
+  var end = -b + sqrt(h);
+  var t = max(0.0, -b - sqrt(h));
+  // Локальный AABB сжимает интервал, особенно у угловатых/вытянутых глыб.
+  var half=sh+0.10;
+  if(fam<0.5){half=sh*0.86+0.10;}
+  if(fam>2.5 && fam<3.5){half=sh*ls+vec3f(lobe,0.0,0.0)+0.10;}
+  for(var axis=0;axis<3;axis++){
+    if(abs(rd[axis])<0.0000001){if(abs(ro[axis])>half[axis]){return RockTrace(t,false,0,false);}}
+    else{let a=(-half[axis]-ro[axis])/rd[axis];let z=(half[axis]-ro[axis])/rd[axis];t=max(t,min(a,z));end=min(end,max(a,z));}
+  }
+  if(t>end){return RockTrace(t,false,0,false);}
+  var prev = t;
+  let entryBase=sdRockBase(ro+rd*t,sh.x,sh.y,sh.z,fam,lobe,ls,seed);
+  var prevD=entryBase-0.045;
+  if(entryBase<=0.05){prevD=sdRock(ro+rd*t,sh.x,sh.y,sh.z,fam,seed,lobe,ls,detail);}
+  let inside = prevD < 0.0;
+  var previousRadius=0.0;
+  var previousStep=0.0;
+  var relaxed=false;
+  var conservative=false;
+  for (var i = 0; i < 128; i++) {
+    let point=ro+rd*t;
+    let baseDistance=sdRockBase(point,sh.x,sh.y,sh.z,fam,lobe,ls,seed);
+    // Итоговое поле ограничено снизу baseD-0.045. Вне этой оболочки
+    // гарантированно нет поверхности: не считаем шум/кратеры на пустом участке.
+    if(baseDistance>0.05 && prevD>=0.0){
+      let outerRadius=(baseDistance-0.045)*0.65;
+      if(relaxed && previousStep>previousRadius+outerRadius){
+        t=prev+previousRadius;relaxed=false;conservative=true;continue;
+      }
+      prev=t;prevD=baseDistance-0.045;
+      relaxed=false;
+      t+=max((baseDistance-0.045)*0.65,eps*0.45);
+      if(t>end){return RockTrace(t,false,i+1,false);}
+      continue;
+    }
+    let d = sdRock(point, sh.x, sh.y, sh.z, fam, seed, lobe, ls, detail);
+    let advance=select(0.65,0.28,abs(baseDistance)<0.4 && detail>0.01);
+    let radius=abs(d)*advance;
+    // Ускоренный шаг принимается только при перекрытии безопасных интервалов.
+    // Иначе возвращаемся к консервативному шагу; лимит/промах не закрашиваются.
+    if(relaxed && (d<0.0 || previousStep>previousRadius+radius)){
+      t=prev+previousRadius;relaxed=false;conservative=true;continue;
+    }
+    // Знак подтверждает пересечение; затем уточняем глубину, а не перескакиваем оболочку.
+    if (i > 0 && (d < 0.0) != (prevD < 0.0)) {
+      var a = prev; var z = t;
+      for (var k = 0; k < 7; k++) {
+        let m = (a + z) * 0.5;
+        let md = sdRock(ro + rd * m, sh.x, sh.y, sh.z, fam, seed, lobe, ls, detail);
+        if ((md < 0.0) == inside) { a = m; } else { z = m; }
+      }
+      return RockTrace((a + z) * 0.5, true, i + 1, false);
+    }
+    if (abs(d) <= eps) { return RockTrace(t, true, i + 1, false); }
+    prev = t; prevD = d;
+    // sdRock — поле с деформациями, а не точная дистанция. Ограничиваем шаг
+    // с запасом на градиент; минимальный шаг меньше допуска пересечения.
+    previousRadius=max(radius,eps*0.45);
+    previousStep=previousRadius*select(1.5,1.0,inside || conservative);
+    relaxed=!inside && !conservative;
+    conservative=false;
+    t+=previousStep;
+    if(t>end){
+      if(relaxed && prev+previousRadius<end){t=end;previousStep=end-prev;}
+      else{return RockTrace(t,false,i+1,false);}
+    }
+  }
+  // Редкие скользящие лучи сходятся медленно. Лимит марша не означает промах:
+  // ищем реальную смену знака в оставшемся интервале и уточняем её.
+  let start = t;
+  prev = t;
+  prevD = sdRock(ro + rd * t,sh.x,sh.y,sh.z,fam,seed,lobe,ls,detail);
+  for (var k = 1; k <= 192; k++) {
+    t = mix(start,end,f32(k)/192.0);
+    let d = sdRock(ro + rd * t,sh.x,sh.y,sh.z,fam,seed,lobe,ls,detail);
+    if ((d < 0.0) != (prevD < 0.0) || abs(d) <= eps) {
+      var a = prev; var z = t;
+      for (var j = 0; j < 8; j++) {
+        let m = (a + z) * 0.5;
+        let md = sdRock(ro+rd*m,sh.x,sh.y,sh.z,fam,seed,lobe,ls,detail);
+        if ((md < 0.0) == (prevD < 0.0)) { a = m; } else { z = m; }
+      }
+      return RockTrace((a+z)*0.5,true,128+k,false);
+    }
+    prev = t; prevD = d;
+  }
+  return RockTrace(t,false,320,false);
+}
+
+fn rockGrain(p: vec3f, seed: f32) -> f32 {
+  let cracks = (1.0 - smoothstep(0.008, 0.035, abs(noise3(p * 12.0 + seed) - 0.5)))
+    * smoothstep(0.55, 0.72, noise3(p * 5.0 + seed));
+  return noise3(p * 67.0 + seed * 31.0) * 0.004 + noise3(p * 151.0 + seed * 47.0) * 0.0015 - cracks * 0.001;
+}
+
+fn craterNormal(p: vec3f, seed: f32, detail: f32) -> vec3f {
+  var n = vec3f(0.0);
+  for (var k = 0; k < 2; k++) {
+    let s = seed + f32(k) * 7.3;
+    let c = normalize(vec3f(h31(vec3f(s, 1.7, 3.0)) - 0.5,
+                             h31(vec3f(s, 5.1, 6.0)) - 0.5,
+                             h31(vec3f(s, 8.9, 2.0)) - 0.5));
+    let r = 0.16 + 0.20 * h31(vec3f(s, 2.9, 4.0));
+    let q = p - c * 0.88;
+    let dd = length(q);
+    if (dd < r) {
+      let t = dd / r;
+      n -= normalize(q) * (1.0 - t * t) * 0.55 * detail;
+    }
+  }
+  return n;
+}
+
+struct VOut {
+  @builtin(position) pos: vec4f,
+  @location(0) uv: vec2f,
+  @location(1) @interpolate(flat) center: vec3f,
+  @location(2) ray: vec3f,
+  @location(3) @interpolate(flat) data: vec4f,   // seed, glow, family, size
+  @location(4) @interpolate(flat) sh: vec4f,     // sx, sy, sz, material
+  @location(5) @interpolate(flat) r1: vec4f,     // axis1, spin
+  @location(6) @interpolate(flat) r2: vec4f,     // axis2, tumble
+  @location(7) @interpolate(flat) ext: vec4f,    // phase1, phase2, lobe, lobeScale
+  @location(8) @interpolate(flat) lod: f32,
+};
+
+fn rockScreenSpan(c: vec2f, r: f32, tanFov: f32) -> vec2f {
+  if (c.y <= r) { return vec2f(-1.0, 1.0); }
+  let a = c.x * c.y;
+  let b = r * sqrt(max(dot(c, c) - r * r, 0.0));
+  return clamp(vec2f(a - b, a + b) / ((c.y * c.y - r * r) * tanFov), vec2f(-1.0), vec2f(1.0));
+}
+
+@vertex fn vs(@builtin(vertex_index) vi: u32,
+              @location(0) ip: vec4f, @location(1) ex: vec4f,
+              @location(2) sh: vec4f, @location(3) r1: vec4f,
+              @location(4) r2: vec4f, @location(5) ext: vec4f) -> VOut {
   var q = array<vec2f, 6>(vec2f(-1.0, -1.0), vec2f(1.0, -1.0), vec2f(-1.0, 1.0),
                          vec2f(-1.0, 1.0), vec2f(1.0, -1.0), vec2f(1.0, 1.0));
   var o: VOut;
-  // уничтоженный камень (ex.x = -2) схлопываем за пределами клипа
   if (ex.x < -1.5) {
     o.pos = vec4f(0.0, 0.0, -2.0, 1.0);
     o.uv = vec2f(0.0);
-    o.lv = vec3f(0.0, 1.0, 0.0);
-    o.seed = 0.0;
-    o.glow = 0.0;
+    o.center = vec3f(0.0);
+    o.ray = vec3f(0.0, 0.0, 1.0);
+    o.data = vec4f(0.0);
+    o.sh = vec4f(1.0);
+    o.r1 = vec4f(0.0, 1.0, 0.0, 0.0);
+    o.r2 = vec4f(0.0, 1.0, 0.0, 0.0);
+    o.ext = vec4f(0.0);
+    o.lod = 0.0;
     return o;
   }
   let corner = q[vi];
@@ -1899,59 +2569,154 @@ fn orbitPos(p: vec3f, size: f32) -> vec3f {
   let size = abs(ip.w);
   let rel = c - u.cam.xyz;
   let z = dot(rel, u.fwd.xyz);
-  // минимальный угловой размер, чтобы далёкие камни не исчезали
-  let s = max(size, max(z, 1.0) * 0.0016);
+  // Дальние камни сохраняют минимальный угловой размер; экономные профили
+  // уменьшают только это визуальное увеличение и число закрашиваемых пикселей.
+  let qualityFlags = u32(u.misc.w + 0.5);
+  let minAngle = select(select(0.0016, 0.0011, (qualityFlags & 512u) != 0u), 0.00065, (qualityFlags & 1024u) != 0u);
+  // Only distant visual enlargement changes: nearby physical shapes stay intact.
+  let sizeEff = max(size, max(z, 1.0) * minAngle);
+  // квад с запасом покрывает самую длинную ось и контактную пару
+  let s = sizeEff * select(rockBound(sh.xyz, ex.z, ext.z, ext.w), 1.0, (qualityFlags & 2048u) != 0u);
   let dir = c + u.right.xyz * corner.x * s + u.up.xyz * corner.y * s - u.cam.xyz;
   let zc = max(dot(dir, u.fwd.xyz), 1.0);
   let x = dot(dir, u.right.xyz) / (u.right.w * zc);
   let y = dot(dir, u.up.xyz) / (u.up.w * zc);
-  // z/w = zc/FAR — та же линейная глубина, что пишет шейдер сцены
-  o.pos = select(vec4f(0.0, 0.0, -2.0, 1.0), vec4f(x * zc, y * zc, zc * zc / FAR, zc), z > 1.0);
+  // Точные касательные к ограничивающей сфере: обычный billboard в плоскости
+  // центра недопокрывает близкое тело. Сфера у near-plane покрывает весь экран.
+  let spanX = rockScreenSpan(vec2f(dot(rel, u.right.xyz), z), s, u.right.w);
+  let spanY = rockScreenSpan(vec2f(dot(rel, u.up.xyz), z), s, u.up.w);
+  let screen = vec2f(select(spanX.x, spanX.y, corner.x > 0.0), select(spanY.x, spanY.y, corner.y > 0.0));
+  o.pos = select(vec4f(0.0, 0.0, -2.0, 1.0), vec4f(screen, 0.0, 1.0), z + s > 0.001);
   o.uv = corner;
-  // Солнце в центре: после поворота направление на него уже другое
-  let lw = -normalize(c);
-  o.lv = vec3f(dot(lw, u.right.xyz), dot(lw, u.up.xyz), dot(lw, u.fwd.xyz));
-  o.seed = ex.w;
-  o.glow = max(ex.y, 0.0);
+  o.center = c;
+  o.ray = normalize(dir);
+  o.data = vec4f(ex.w, max(ex.y, 0.0), ex.z, sizeEff);
+  o.sh = sh;
+  o.r1 = r1;
+  o.r2 = r2;
+  o.ext = ext;
+  // проекционный радиус в пикселях: плавный LOD по размеру на экране
+  let px = s * u.res.y / max(2.0 * u.up.w * z, 0.001);
+  o.lod = smoothstep(2.0, 12.0, px);
   return o;
 }
 
-@fragment fn fs(v: VOut) -> @location(0) vec4f {
-  let d2 = dot(v.uv, v.uv);
-  if (d2 > 1.0) { discard; }
-  // неровный силуэт: радиус зависит от угла и зерна камня
-  let ang = atan2(v.uv.y, v.uv.x) + 3.14159265;
-  let k = floor(ang * 2.6);
-  let wob = 0.80 + 0.17 * h31(vec3f(k, v.seed, 1.0)) + 0.06 * h31(vec3f(k * 2.3, v.seed, 3.0));
-  if (d2 > wob * wob) { discard; }
-  // норма полусферы + освещение от Солнца: виден терминатор на камне
-  let zz = sqrt(max(1.0 - d2 / (wob * wob), 0.0));
-  let nrm = normalize(vec3f(v.uv / wob, zz));
-  let nl = max(dot(nrm, normalize(v.lv)), 0.0);
-  // кратеры и неоднородность
-  let sp = h31(vec3f(floor(v.uv * 9.0) + vec2f(v.seed, 5.0), 5.0));
-  let crater = smoothstep(0.78, 1.0, sp) * 0.30;
-  // тёмные каменные породы: C-тип серый, S-тип красноватый
-  let tint = mix(vec3f(0.30, 0.28, 0.26), vec3f(0.40, 0.31, 0.23), h31(vec3f(v.seed, 7.0, 1.0)));
-  let alb = tint * (0.75 + 0.35 * h31(vec3f(v.seed, 2.0, 3.0)));
-  var col = alb * (0.05 + 0.85 * nl) * (0.90 + 0.20 * sp - crater);
-  // осколки вспыхивают на пару десятых секунды
-  let gl = clamp(v.glow, 0.0, 2.0);
-  if (gl > 0.001) { col += vec3f(1.0, 0.70, 0.38) * gl * (0.55 + 0.45 * (1.0 - d2)); }
-  return vec4f(col, 1.0);
+struct FOut { @location(0) color: vec4f, @builtin(frag_depth) depth: f32 };
+
+@fragment fn fs(v: VOut) -> FOut {
+  let ndc = vec2f(v.pos.x / u.res.x * 2.0 - 1.0, 1.0 - v.pos.y / u.res.y * 2.0);
+  let ray = normalize(u.fwd.xyz + u.right.xyz * ndc.x * u.right.w + u.up.xyz * ndc.y * u.up.w);
+  if ((u32(u.misc.w + 0.5) & 2048u) != 0u) {
+    // Analytic sphere: no marching, procedural shape, grain, or surface AO.
+    let oc = u.cam.xyz - v.center;
+    let b = dot(oc, ray);
+    let closest = oc - ray * b;
+    let h = v.data.w * v.data.w - dot(closest, closest);
+    if (h < 0.0) { discard; }
+    let root = sqrt(h);
+    var distance = -b - root;
+    if (distance < 0.0) { distance = -b + root; }
+    if (distance < 0.0) { discard; }
+    let normal = normalize(oc + ray * distance);
+    let hit = u.cam.xyz + ray * distance;
+    let diffuse = max(dot(normal, normalize(-hit)), 0.0);
+    let glow = clamp(v.data.y, 0.0, 2.0);
+    var simple: FOut;
+    simple.color = vec4f(vec3f(0.22, 0.20, 0.18) * (0.12 + 0.88 * diffuse) + vec3f(1.0, 0.70, 0.38) * glow, 1.0);
+    simple.depth = clamp(distance / FAR, 0.0, 1.0);
+    return simple;
+  }
+  let seed = v.data.x;
+  let size = v.data.w;
+  let fam = v.data.z;
+  let sx = v.sh.x;
+  let sy = v.sh.y;
+  let sz = v.sh.z;
+  let mat = v.sh.w;
+  let lobe = v.ext.z;
+  let lobeScale = v.ext.w;
+  let a1 = v.ext.x + v.r1.w * orbit.x;
+  let a2 = v.ext.y + v.r2.w * orbit.x;
+  let ax1 = normalize(v.r1.xyz);
+  let ax2 = normalize(v.r2.xyz);
+  // local -> world and world -> local
+  let invDir = normalize(rotAxis(rotAxis(ray, ax2, -a2), ax1, -a1));
+  let ro = rotAxis(rotAxis(u.cam.xyz - v.center, ax2, -a2), ax1, -a1) / max(size, 0.0001);
+  let detail = v.lod;
+  let eps = max(0.0008, 0.35 * length(ro) * u.up.w / u.res.y);
+  let trace = traceRock(ro, invDir, v.sh.xyz, fam, seed, lobe, lobeScale, detail, eps);
+  if (!trace.hit) { discard; }
+  let t = trace.t;
+  let p = ro + invDir * t;
+  let e = 0.002;
+  let d0 = sdRock(p, sx, sy, sz, fam, seed, lobe, lobeScale, detail);
+  var nL = normalize(vec3f(
+    sdRock(p + vec3f(e, 0.0, 0.0), sx, sy, sz, fam, seed, lobe, lobeScale, detail) - d0,
+    sdRock(p + vec3f(0.0, e, 0.0), sx, sy, sz, fam, seed, lobe, lobeScale, detail) - d0,
+    sdRock(p + vec3f(0.0, 0.0, e), sx, sy, sz, fam, seed, lobe, lobeScale, detail) - d0));
+  let lowQ = (u32(u.misc.w + 0.5) & 512u) != 0u;
+  let ecoQ = (u32(u.misc.w + 0.5) & 1024u) != 0u;
+  // Skip noise work, rather than merely attenuating its result.
+  if (!ecoQ && detail > select(0.15, 0.8, lowQ)) {
+    let grain = rockGrain(p, seed);
+    let micro = vec3f(rockGrain(p + vec3f(e,0,0),seed),rockGrain(p + vec3f(0,e,0),seed),rockGrain(p + vec3f(0,0,e),seed)) - grain;
+    let footprint = 2.0 * t * u.up.w / (u.res.y * max(abs(dot(nL,invDir)),0.15));
+    let microFade = 1.0 - smoothstep(0.006,0.025,footprint);
+    nL = normalize(nL + (micro / e) * detail * microFade * select(0.9, 0.55, lowQ));
+  }
+  let hitW = v.center + rotAxis(rotAxis(p * size, ax1, a1), ax2, a2);
+  let N = normalize(rotAxis(rotAxis(nL, ax1, a1), ax2, a2));
+  let L = normalize(-hitW);
+  let V = normalize(u.cam.xyz - hitW);
+  let Hv = normalize(L + V);
+  let nl = max(dot(N, L), 0.0);
+  let shadow = smoothstep(-0.02, 0.25, nl);
+  // породы: тёмный углерод, бурый, светлый камень, редкий металл
+  var base = mix(vec3f(0.14, 0.135, 0.125), vec3f(0.22, 0.18, 0.14), h31(vec3f(seed,3.1,9.0)) * 0.65);
+  var rough = 0.80;
+  var metal = 0.0;
+  if (mat > 0.5 && mat < 1.5) { base = vec3f(0.150, 0.122, 0.090); rough = 0.72; }
+  else if (mat > 1.5 && mat < 2.5) { base = vec3f(0.245, 0.235, 0.220); rough = 0.56; }
+  else if (mat > 2.5) { base = vec3f(0.19, 0.18, 0.17); rough = 0.68; metal = 0.22; }
+  let mottle = (0.72 + 0.42 * noise3(p * 5.2 + vec3f(seed * 17.0))) *
+               (0.90 + 0.18 * noise3(p * 16.0 + vec3f(seed * 23.0)));
+  let crater = 0.82 + 0.18 * smoothstep(0.28, 0.88, noise3(p * 3.1 + vec3f(seed * 5.0)));
+  let specPow = mix(16.0, 48.0, 1.0 - rough);
+  let specStr = 0.006 + 0.015 * metal;
+  let spec = pow(max(dot(N, Hv), 0.0), specPow) * specStr * (0.30 + 0.70 * shadow);
+  // Несколько проб вдоль нормали дают затенение чаш, не глобальное затемнение.
+  var ao = 1.0;
+  if (detail > 0.4) {
+    let a = sdRock(p+nL*0.06,sx,sy,sz,fam,seed,lobe,lobeScale,detail);
+    let b = sdRock(p+nL*0.14,sx,sy,sz,fam,seed,lobe,lobeScale,detail);
+    ao = clamp(0.45 + 0.55 * min(a/0.06,b/0.14), 0.35, 1.0);
+  }
+  let ambient = vec3f(0.010, 0.011, 0.013) * ao;
+  var col = base * ((0.035 + 0.965 * nl) * mottle * crater) * ao + vec3f(1.0, 0.97, 0.92) * spec + ambient;
+  let gl = clamp(v.data.y, 0.0, 2.0);
+  if (gl > 0.001) { col += vec3f(1.0, 0.70, 0.38) * gl * (0.55 + 0.45 * noise3(p * 8.0 + vec3f(seed))); }
+  let dist = length(hitW - u.cam.xyz);
+  var out: FOut;
+  out.color = vec4f(col, 1.0);
+  out.depth = clamp(dist / FAR, 0.0, 1.0);
+  return out;
 }`;
 
 const mBelt = mod(BELT);
 const bglBelt = device.createBindGroupLayout({ entries: [
   { binding: 0, visibility: SS.VERTEX | SS.FRAGMENT, buffer: { type: 'uniform' } },
-  { binding: 1, visibility: SS.VERTEX, buffer: { type: 'uniform' } },
+  { binding: 1, visibility: SS.VERTEX | SS.FRAGMENT, buffer: { type: 'uniform' } },
 ] });
 const pBelt = device.createRenderPipeline({
   layout: device.createPipelineLayout({ bindGroupLayouts: [bglBelt] }),
   vertex: { module: mBelt, entryPoint: 'vs', buffers: [{
-    arrayStride: 32, stepMode: 'instance', attributes: [
+    arrayStride: ROCK_STRIDE * 4, stepMode: 'instance', attributes: [
       { shaderLocation: 0, offset: 0, format: 'float32x4' },
       { shaderLocation: 1, offset: 16, format: 'float32x4' },
+      { shaderLocation: 2, offset: 32, format: 'float32x4' },
+      { shaderLocation: 3, offset: 48, format: 'float32x4' },
+      { shaderLocation: 4, offset: 64, format: 'float32x4' },
+      { shaderLocation: 5, offset: 80, format: 'float32x4' },
     ],
   }] },
   fragment: { module: mBelt, entryPoint: 'fs', targets: [{ format: HDR }] },
@@ -2207,6 +2972,9 @@ const SKY_SHADER = /* wgsl */`
 struct U { cam: vec4f, right: vec4f, up: vec4f, fwd: vec4f, res: vec4f, misc: vec4f, sun: vec4f, fx: vec4f };
 @group(0) @binding(0) var<uniform> u: U;
 
+// Звёзды остаются обычным фоном. fsBH заменяет его целиком после всех
+// физических слоёв: предварительная маска здесь применила бы переход дважды.
+
 struct VIn { @location(0) a: vec4f, @location(1) b: vec4f };   // dir.xyz + яркость, цвет + радиус
 struct VOut { @builtin(position) pos: vec4f, @location(0) uv: vec2f, @location(1) col: vec3f };
 struct LOut { @builtin(position) pos: vec4f, @location(0) col: vec3f };
@@ -2277,8 +3045,23 @@ const bgSky = device.createBindGroup({ layout: bglSky, entries: [{ binding: 0, r
 const ORB_SHADER = /* wgsl */`
 struct U { cam: vec4f, right: vec4f, up: vec4f, fwd: vec4f, res: vec4f, misc: vec4f, sun: vec4f, fx: vec4f };
 @group(0) @binding(0) var<uniform> u: U;
+${BH_COMMON}
+
+// Та же глубина/альфа, что у пикселя дыры: точка впереди не трогается,
+// за тенью исчезает, за диском получает пропускание 1 - alpha.
+fn bhPointFade(p: vec3f) -> f32 {
+  if ((u32(u.misc.w + 0.5) & 16u) == 0u) { return 1.0; }
+  let ro = u.cam.xyz;
+  let v = p - ro;
+  let L = length(v);
+  if (L < 1e-4) { return 1.0; }
+  let bh = bhOcclusion(ro, v / L, u.cam.w, 384, 0);
+  if (L < bh.depth) { return 1.0; }
+  return 1.0 - bh.alpha * bhMaskRay(ro, v / L);
+}
+
 struct VIn { @location(0) pos: vec3f, @location(1) col: vec3f };
-struct VOut { @builtin(position) pos: vec4f, @location(0) col: vec3f };
+struct VOut { @builtin(position) pos: vec4f, @location(0) col: vec3f, @location(1) world: vec3f };
 @vertex fn vs(v: VIn) -> VOut {
   let rel = v.pos - u.cam.xyz;
   let z = max(dot(rel, u.fwd.xyz), 1e-3);
@@ -2290,9 +3073,12 @@ struct VOut { @builtin(position) pos: vec4f, @location(0) col: vec3f };
   var o: VOut;
   o.pos = vec4f(x * z, y * z, (length(rel) / 400000.0) * z, z);
   o.col = v.col * near * plane * 0.16;
+  o.world = v.pos;
   return o;
 }
-@fragment fn fs(v: VOut) -> @location(0) vec4f { return vec4f(v.col, 1.0); }`;
+@fragment fn fs(v: VOut) -> @location(0) vec4f {
+  return vec4f(v.col * bhPointFade(v.world), 1.0);
+}`;
 const mOrb = mod(ORB_SHADER);
 const pOrb = device.createRenderPipeline({
   layout: device.createPipelineLayout({ bindGroupLayouts: [bglHst] }),
@@ -2305,64 +3091,130 @@ const pOrb = device.createRenderPipeline({
   depthStencil: { format: 'depth32float', depthWriteEnabled: false, depthCompare: 'less-equal' },
 });
 
-// камень: позиция, размер, направление на Солнце и зерно для силуэта
-function rockSet(arr, i, x, y, z, size, seed) {
-  const o = i * 8;
-  // ex.xyz теперь свободны: x — флаг «разбит», y — свечение осколка
+// Детерминированный PRNG: внешность камня не зависит от перезагрузки/качества/LOD.
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function norm3(x, y, z) {
+  const L = Math.hypot(x, y, z) || 1;
+  return [x / L, y / L, z / L];
+}
+function rockShape(rnd) {
+  const seed = rnd();
+  const fr = rnd();
+  let family = 4;
+  if (fr < 0.28) family = 0;
+  else if (fr < 0.50) family = 1;
+  else if (fr < 0.66) family = 2;
+  else if (fr < 0.69) family = 3;
+  let sx = 0.78 + rnd() * 0.28;
+  let sy = 0.78 + rnd() * 0.28;
+  let sz = 0.78 + rnd() * 0.28;
+  let lobe = 0;
+  let lobeScale = 1;
+  if (family === 0) {
+    sx = 0.80 + rnd() * 0.35; sy = 0.78 + rnd() * 0.32; sz = 0.75 + rnd() * 0.35;
+  } else if (family === 1) {
+    sx = 1.25 + rnd() * 0.50; sy = 0.58 + rnd() * 0.22; sz = 0.62 + rnd() * 0.25;
+  } else if (family === 2) {
+    sx = 1.10 + rnd() * 0.40; sy = 0.42 + rnd() * 0.20; sz = 1.00 + rnd() * 0.35;
+  } else if (family === 3) {
+    sx = 0.82 + rnd() * 0.24; sy = 0.62 + rnd() * 0.20; sz = 0.68 + rnd() * 0.24;
+    lobe = 0.56 + rnd() * 0.38; lobeScale = 0.56 + rnd() * 0.22;
+  }
+  const mr = rnd();
+  let mat = 0;
+  if (mr > 0.80) mat = 1;
+  if (mr > 0.94) mat = 2;
+  if (mr > 0.985) mat = 3;
+  const a1 = norm3(rnd() * 2 - 1, rnd() * 2 - 1, rnd() * 2 - 1);
+  let a2 = norm3(rnd() * 2 - 1, rnd() * 2 - 1, rnd() * 2 - 1);
+  if (Math.abs(a1[0] * a2[0] + a1[1] * a2[1] + a1[2] * a2[2]) > 0.92) {
+    a2 = norm3(a2[0] + 0.7, a2[1] - 0.4, a2[2] + 0.5);
+  }
+  const spin = (0.004 + rnd() * 0.055) * (rnd() < 0.12 ? -1 : 1);
+  const tumble = (rnd() < 0.22 ? 0.002 + rnd() * 0.012 : 0) * (rnd() < 0.5 ? -1 : 1);
+  return {
+    seed, family, sx, sy, sz, mat, lobe, lobeScale,
+    a1, a2, spin, tumble, ph1: rnd() * TAU, ph2: rnd() * TAU,
+  };
+}
+// 24 float: ip / ex / shape / axis1+spin / axis2+tumble / phase+lobe
+function rockSet(arr, i, x, y, z, size, shape, glow = 0) {
+  const o = i * ROCK_STRIDE;
   arr[o] = x; arr[o + 1] = y; arr[o + 2] = z; arr[o + 3] = size;
-  arr[o + 4] = 0; arr[o + 5] = 0; arr[o + 6] = 0; arr[o + 7] = seed;
+  arr[o + 4] = 0; arr[o + 5] = glow; arr[o + 6] = shape.family; arr[o + 7] = shape.seed;
+  arr[o + 8] = shape.sx; arr[o + 9] = shape.sy; arr[o + 10] = shape.sz; arr[o + 11] = shape.mat;
+  arr[o + 12] = shape.a1[0]; arr[o + 13] = shape.a1[1]; arr[o + 14] = shape.a1[2]; arr[o + 15] = shape.spin;
+  arr[o + 16] = shape.a2[0]; arr[o + 17] = shape.a2[1]; arr[o + 18] = shape.a2[2]; arr[o + 19] = shape.tumble;
+  arr[o + 20] = shape.ph1; arr[o + 21] = shape.ph2; arr[o + 22] = shape.lobe; arr[o + 23] = shape.lobeScale;
 }
 
-const beltData = new Float32Array(BELT_N * 8);
+const beltRnd = mulberry32(0x1D2C3B4A);
+const beltData = new Float32Array(BELT_N * ROCK_STRIDE);
 for (let i = 0; i < BELT_N; i++) {
-  const r = 3480 + Math.pow(Math.random(), 0.75) * 1250;
-  const a = Math.random() * TAU;
-  const y = (Math.random() - 0.5) * (Math.random() < 0.6 ? 90 : 260);
-  const big = Math.random() < 0.008;
+  const r = 3480 + Math.pow(beltRnd(), 0.75) * 1250;
+  const a = beltRnd() * TAU;
+  const y = (beltRnd() - 0.5) * (beltRnd() < 0.6 ? 90 : 260);
+  const big = beltRnd() < 0.008;
   rockSet(beltData, i, Math.cos(a) * r, y, Math.sin(a) * r,
-    big ? 8 + Math.random() * 12 : 1.6 + Math.random() * 4, Math.random() * 100);
+    big ? 8 + beltRnd() * 12 : 1.6 + beltRnd() * 4, rockShape(beltRnd));
 }
 const beltBuf = device.createBuffer({ size: beltData.byteLength, usage: BU.VERTEX | BU.COPY_DST });
 Q.writeBuffer(beltBuf, 0, beltData);
 
 // троянцы Юпитера: облако вокруг точек L4/L5 (±60° по орбите), летит вместе с планетой
 const TROJAN_N = 1400;
+const trojanRnd = mulberry32(0x5A6B7C8D);
 const trojanSeed = new Float32Array(TROJAN_N * 4);
+const trojanShape = [];
 for (let i = 0; i < TROJAN_N; i++) {
   const side = i < TROJAN_N / 2 ? 1 : -1;
-  trojanSeed[i * 4] = side * (Math.PI / 3) + (Math.random() - 0.5) * 0.5;
-  trojanSeed[i * 4 + 1] = 0.93 + Math.random() * 0.14;
-  trojanSeed[i * 4 + 2] = (Math.random() - 0.5) * 600;
-  trojanSeed[i * 4 + 3] = 1.2 + Math.random() * 3.5;
+  trojanSeed[i * 4] = side * (Math.PI / 3) + (trojanRnd() - 0.5) * 0.5;
+  trojanSeed[i * 4 + 1] = 0.93 + trojanRnd() * 0.14;
+  trojanSeed[i * 4 + 2] = (trojanRnd() - 0.5) * 600;
+  trojanSeed[i * 4 + 3] = 1.2 + trojanRnd() * 3.5;
+  trojanShape.push(rockShape(trojanRnd));
 }
 // пояс Койпера и семейство Хильды — статичные облака
 const KUIPER_N = 2600;
-const kuiperData = new Float32Array(KUIPER_N * 8);
+const kuiperRnd = mulberry32(0x2E4F6A8C);
+const kuiperData = new Float32Array(KUIPER_N * ROCK_STRIDE);
 for (let i = 0; i < KUIPER_N; i++) {
-  const au = 30 + Math.pow(Math.random(), 0.8) * 20;
+  const au = 30 + Math.pow(kuiperRnd(), 0.8) * 20;
   const r = orbitR(au);
-  const a = Math.random() * TAU;
-  const y = (Math.random() - 0.5) * 2 * r * (0.02 + Math.random() * 0.13);
-  rockSet(kuiperData, i, Math.cos(a) * r, y, Math.sin(a) * r, 2 + Math.random() * 4, Math.random() * 100);
+  const a = kuiperRnd() * TAU;
+  const y = (kuiperRnd() - 0.5) * 2 * r * (0.02 + kuiperRnd() * 0.13);
+  rockSet(kuiperData, i, Math.cos(a) * r, y, Math.sin(a) * r,
+    2 + kuiperRnd() * 4, rockShape(kuiperRnd));
 }
 const kuiperBuf = device.createBuffer({ size: kuiperData.byteLength, usage: BU.VERTEX | BU.COPY_DST });
 Q.writeBuffer(kuiperBuf, 0, kuiperData);
 
 const HILDA_N = 600;
-const hildaData = new Float32Array(HILDA_N * 8);
+const hildaRnd = mulberry32(0x7B3C9D1E);
+const hildaData = new Float32Array(HILDA_N * ROCK_STRIDE);
 for (let i = 0; i < HILDA_N; i++) {
-  const r = 5150 + Math.random() * 340;
-  const a = Math.random() * TAU;
-  rockSet(hildaData, i, Math.cos(a) * r, (Math.random() - 0.5) * 420, Math.sin(a) * r,
-    1.4 + Math.random() * 3, Math.random() * 100);
+  const r = 5150 + hildaRnd() * 340;
+  const a = hildaRnd() * TAU;
+  rockSet(hildaData, i, Math.cos(a) * r, (hildaRnd() - 0.5) * 420, Math.sin(a) * r,
+    1.4 + hildaRnd() * 3, rockShape(hildaRnd));
 }
 const hildaBuf = device.createBuffer({ size: hildaData.byteLength, usage: BU.VERTEX | BU.COPY_DST });
 Q.writeBuffer(hildaBuf, 0, hildaData);
 
-const trojanBuf = device.createBuffer({ size: TROJAN_N * 32, usage: BU.VERTEX | BU.COPY_DST });
-const trojanData = new Float32Array(TROJAN_N * 8);
+const trojanBuf = device.createBuffer({ size: TROJAN_N * ROCK_STRIDE * 4, usage: BU.VERTEX | BU.COPY_DST });
+const trojanData = new Float32Array(TROJAN_N * ROCK_STRIDE);
 const JUP = ALL[4];
 const trojDead = new Set();
+for (let i = 0; i < TROJAN_N; i++) {
+  rockSet(trojanData, i, 0, 0, 0, -trojanSeed[i * 4 + 3], trojanShape[i]);
+}
 function updateTrojans() {
   if (!SET.trojans) return;
   const j = JUP.pos;
@@ -2372,23 +3224,82 @@ function updateTrojans() {
     const o = i * 4;
     const a = ja + trojanSeed[o];
     const r = jd * trojanSeed[o + 1];
-    rockSet(trojanData, i, Math.cos(a) * r, j[1] + trojanSeed[o + 2], Math.sin(a) * r,
-      -trojanSeed[o + 3], (i * 37) % 100);
-    if (trojDead.has(i)) trojanData[i * 8 + 4] = -2;
+    const p = i * ROCK_STRIDE;
+    trojanData[p] = Math.cos(a) * r;
+    trojanData[p + 1] = j[1] + trojanSeed[o + 2];
+    trojanData[p + 2] = Math.sin(a) * r;
+    trojanData[p + 3] = -trojanSeed[o + 3];
+    trojanData[p + 4] = trojDead.has(i) ? -2 : 0;
   }
   Q.writeBuffer(trojanBuf, 0, trojanData);
 }
 
 // ============================================================ цели рендера
 const NB_LEVELS = 5;
-let sceneTex = null, depthTex = null, levels = [], bgDown = [], bgUp = [], bgFinal = null, bgScene = null;
+let sceneTex = null, depthTex = null, levels = [], bgDown = [], bgUp = [], bgFinal = null, bgScene = null, bgBH = null;
 let DW = 1, DH = 1, W = 1, H = 1;
-let scale = 1;
+let scale = 0.8, autoQuality = 'medium', appliedQuality = null;
+let qualitySlow = 0, qualityFast = 0;
+const QUALITY_PROFILES = {
+  low: { scale: 0.6, dpr: 1, bloomLevels: 0, debris: 84, debrisBurst: 0.35, flags: 1536 },
+  medium: { scale: 0.8, dpr: 1.5, bloomLevels: 3, debris: 210, debrisBurst: 0.65, flags: 512 },
+  full: { scale: 1, dpr: 2, bloomLevels: 5, debris: 420, debrisBurst: 1, flags: 0 },
+};
+function qualityProfile() {
+  return QUALITY_PROFILES[SET.quality === 'auto' ? autoQuality : SET.quality] || QUALITY_PROFILES.medium;
+}
+function applyQuality() {
+  if (!['auto','low','medium','full'].includes(SET.quality)) SET.quality='auto';
+  if (appliedQuality !== SET.quality) {
+    if (SET.quality === 'auto') autoQuality='medium';
+    qualitySlow=qualityFast=0;
+    scale=qualityProfile().scale;
+    appliedQuality=SET.quality;
+  } else if (SET.quality !== 'auto') scale=qualityProfile().scale;
+  resize(false);
+  updateQualityStatus();
+}
+function updateQualityStatus() {
+  const el=$('qualityStatus');
+  if (!el) return;
+  const tier=SET.quality==='auto'?autoQuality:SET.quality;
+  const names=LANG==='en'?{low:'Low',medium:'Medium',full:'Maximum'}:{low:'Низкое',medium:'Среднее',full:'Максимальное'};
+  const prefix=LANG==='en'?'Active':'Сейчас';
+  el.textContent=`${prefix}: ${names[tier]} · ${Math.round(scale*100)}% · DPR ≤ ${qualityProfile().dpr}`;
+}
+function adaptQuality(fps, cap, inactive) {
+  if (SET.quality !== 'auto' || inactive) { qualitySlow=qualityFast=0; return false; }
+  if (fps < cap*0.86) { qualitySlow++; qualityFast=0; }
+  else if (fps >= cap*0.97) { qualityFast++; qualitySlow=0; }
+  else { qualitySlow=qualityFast=0; }
+  if (qualitySlow >= 2) {
+    qualitySlow=0;
+    if (autoQuality==='full') autoQuality='medium';
+    else if (autoQuality==='medium') autoQuality='low';
+    else if (scale>0.5) { scale=Math.max(0.5,scale-0.05); return true; }
+    else return false;
+    scale=qualityProfile().scale;
+    return true;
+  }
+  // Five stable seconds before increasing quality; ignore background gaps.
+  if (qualityFast >= 10) {
+    qualityFast=0;
+    if (scale<qualityProfile().scale-0.001) scale=Math.min(qualityProfile().scale,scale+0.05);
+    else if (autoQuality==='low') { autoQuality='medium'; scale=qualityProfile().scale; }
+    else if (autoQuality==='medium') { autoQuality='full'; scale=qualityProfile().scale; }
+    else return false;
+    return true;
+  }
+  return false;
+}
 
 function makeTargets() {
   sceneTex?.destroy(); levels.forEach((t) => t.destroy()); depthTex?.destroy();
   sceneTex = tex(W, H, HDR, TU.RENDER_ATTACHMENT | TU.TEXTURE_BINDING);
-  depthTex = tex(W, H, 'depth32float', TU.RENDER_ATTACHMENT);
+  depthTex = tex(W, H, 'depth32float', TU.RENDER_ATTACHMENT | TU.TEXTURE_BINDING);
+  bgBH = device.createBindGroup({ layout: bglBH, entries: [
+    { binding: 0, resource: depthTex.createView() },
+  ] });
   levels = []; let w = W, h = H;
   for (let i = 0; i < NB_LEVELS; i++) { w = Math.max(1, w >> 1); h = Math.max(1, h >> 1); levels.push(tex(w, h, HDR, TU.RENDER_ATTACHMENT | TU.TEXTURE_BINDING)); }
   bgDown = []; bgUp = [];
@@ -2416,7 +3327,7 @@ function makeTargets() {
 }
 
 function resize(force) {
-  const dpr = Math.min(devicePixelRatio || 1, 2);
+  const dpr = Math.min(devicePixelRatio || 1, qualityProfile().dpr);
   const dw = Math.max(2, Math.round(canvas.clientWidth * dpr));
   const dh = Math.max(2, Math.round(canvas.clientHeight * dpr));
   const w = Math.max(2, Math.round(dw * scale));
@@ -2467,6 +3378,8 @@ function lookAt(x, y, z) {
 let target = -1, tkA = 0, tkB = 0, tkC = 0, autoAim = true;
 
 function applyLang() {
+  updateQualityStatus();
+  syncBHPreviewUI();
   const d = I18N[LANG] || I18N.ru;
   document.documentElement.lang = LANG;
   for (const el of document.querySelectorAll('[data-i18n]')) {
@@ -2483,6 +3396,10 @@ function applyLang() {
   }
   const sb = $('searchBtn');
   if (sb) { sb.title = d.search; sb.setAttribute('aria-label', d.search); }
+  $('helpBtn').setAttribute('aria-label',T('helpMenu'));
+  panel?.querySelector('.menuHeader button')?.setAttribute('aria-label',T('closeMenu'));
+  panel?.querySelector('.menuTabs')?.setAttribute('aria-label',T('settings'));
+  $('shipSpeed')?.setAttribute('aria-label',T('engine'));
   const gear = $('gear');
   if (gear) gear.setAttribute('aria-label', d.settings);
   for (const b of $('langSeg').querySelectorAll('button')) b.classList.toggle('on', b.dataset.lang === LANG);
@@ -2631,6 +3548,7 @@ function gotoBody(i, instant = false) {
   const b = ALL[i], v = bodyView(i);
   const end = [b.pos[0] + v.off[0], b.pos[1] + v.off[1], b.pos[2] + v.off[2]];
   if (instant || WALL || REDUCED_MOTION) {
+    invalidateLabelDepth();
     target = i;
     setTargetName(i);
     posX = end[0]; posY = end[1]; posZ = end[2];
@@ -2773,6 +3691,84 @@ const skyLabelEls = (CONSTNAME_RAW ? CONSTNAME_RAW.split(';') : []).map((row) =>
   return { el, d: xyz.split(',').map(Number) };
 });
 
+// Малый асинхронный запрос готовой глубины: подписи видят ту же поверхность,
+// что и пиксели, без CPU-порта процедурного камня и без ожидания GPU в кадре.
+const LABEL_OCCLUSION = /* wgsl */`
+@group(0) @binding(0) var depth: texture_depth_2d;
+@group(0) @binding(1) var<storage,read> points: array<vec4f>;
+@group(0) @binding(2) var<storage,read_write> visible: array<u32>;
+@compute @workgroup_size(64) fn main(@builtin(global_invocation_id) id: vec3u) {
+  let i=id.x; if(i>=arrayLength(&points)){return;}
+  let q=points[i];visible[i]=0u;if(q.w<0.0){return;}
+  let limit=vec2i(textureDimensions(depth))-1;
+  let p=clamp(vec2i(q.xy),vec2i(0),limit);
+  let d=max(textureLoad(depth,p,0),max(textureLoad(depth,clamp(p+vec2i(1,0),vec2i(0),limit),0),textureLoad(depth,clamp(p-vec2i(1,0),vec2i(0),limit),0)));
+  visible[i]=select(0u,1u,d>=q.z-q.w);
+}`;
+const labelQueryN=ALL.length*2+skyLabelEls.length;
+const labelQueries=new Float32Array(labelQueryN*4);
+const labelQueryBuf=device.createBuffer({size:labelQueries.byteLength,usage:BU.STORAGE|BU.COPY_DST});
+const labelResultBuf=device.createBuffer({size:labelQueryN*4,usage:BU.STORAGE|BU.COPY_SRC});
+const labelReadBuf=device.createBuffer({size:labelQueryN*4,usage:BU.COPY_DST|BU.MAP_READ});
+const labelPipeline=device.createComputePipeline({layout:'auto',compute:{module:mod(LABEL_OCCLUSION),entryPoint:'main'}});
+let labelVisibility=new Uint32Array(labelQueryN), labelPending=false, labelPose=null, labelTravel=0;
+let labelGeneration=0, labelFramePosition=null;
+function invalidateLabelDepth() {
+  labelGeneration++;
+  labelPose=null;
+}
+function beginLabelMotion() {
+  // Input callbacks and debug helpers can jump between frames, in any direction.
+  if(labelFramePosition && (posX!==labelFramePosition.x || posY!==labelFramePosition.y || posZ!==labelFramePosition.z)) invalidateLabelDepth();
+  labelFramePosition={x:posX,y:posY,z:posZ};
+}
+function endLabelMotion() {
+  // Include orbital tracking, autopilot, gravity and the final target clamp.
+  labelTravel+=Math.hypot(posX-labelFramePosition.x,posY-labelFramePosition.y,posZ-labelFramePosition.z);
+  labelFramePosition={x:posX,y:posY,z:posZ};
+}
+function labelDepthVisible(i) {
+  if(!labelPose || performance.now()-labelPose.time>250 || labelPose.w!==W || labelPose.h!==H) return false;
+  if(Math.hypot(posX-labelPose.x,posY-labelPose.y,posZ-labelPose.z)>100+Math.max(0,labelTravel-labelPose.travel) || Math.abs(yaw-labelPose.yaw)>0.1 || Math.abs(pitch-labelPose.pitch)>0.1 || Math.abs(viewTan-labelPose.fov)>0.001) return false;
+  if(i<ALL.length) return labelVisibility[i*2]===1 && labelVisibility[i*2+1]===1;
+  return labelVisibility[i+ALL.length]===1;
+}
+function encodeLabelDepth(enc) {
+  if(WALL || labelPending || (!SET.labels && !SET.constNames)) return false;
+  const add=(i,dx,dy,dz,distance)=>{
+    const o=i*4,z=dx*U[12]+dy*U[13]+dz*U[14];labelQueries[o+3]=-1;
+    if(z<=0) return;
+    const sx=(dx*U[4]+dy*U[5]+dz*U[6])/(U[7]*z), sy=(dx*U[8]+dy*U[9]+dz*U[10])/(U[11]*z);
+    if(Math.abs(sx)>1.06 || Math.abs(sy)>1.06) return;
+    labelQueries[o]=(sx*0.5+0.5)*W;labelQueries[o+1]=(0.5-sy*0.5)*H;
+    labelQueries[o+2]=distance/400000;labelQueries[o+3]=Math.max(0.15,distance*0.00002)/400000;
+  };
+  for(let i=0;i<ALL.length;i++){
+    const b=ALL[i],dx=b.pos[0]-posX,dy=b.pos[1]-posY,dz=b.pos[2]-posZ;
+    add(i*2,dx,dy,dz,Math.max(0,Math.hypot(dx,dy,dz)-b.R*1.12));
+    const o=i*8,z=dx*U[12]+dy*U[13]+dz*U[14];
+    labelQueries.copyWithin(o+4,o,o+4);
+    if(z>0) labelQueries[o+5]-=Math.min(H*0.4,b.R/z/U[11]*H*0.5)+14*H/(canvas.clientHeight||innerHeight);
+  }
+  for(let i=0;i<skyLabelEls.length;i++) add(ALL.length*2+i,...skyLabelEls[i].d,400000);
+  Q.writeBuffer(labelQueryBuf,0,labelQueries);
+  const group=device.createBindGroup({layout:labelPipeline.getBindGroupLayout(0),entries:[
+    {binding:0,resource:depthTex.createView()},{binding:1,resource:{buffer:labelQueryBuf}},{binding:2,resource:{buffer:labelResultBuf}},
+  ]});
+  const pass=enc.beginComputePass();pass.setPipeline(labelPipeline);pass.setBindGroup(0,group);pass.dispatchWorkgroups(Math.ceil(labelQueryN/64));pass.end();
+  enc.copyBufferToBuffer(labelResultBuf,0,labelReadBuf,0,labelQueryN*4);
+  labelPending=true;return true;
+}
+function readLabelDepth() {
+  const pose={x:posX,y:posY,z:posZ,travel:labelTravel,generation:labelGeneration,yaw,pitch,fov:viewTan,w:W,h:H,time:performance.now()};
+  labelReadBuf.mapAsync(GPUMapMode.READ).then(()=>{
+    if(pose.generation===labelGeneration) {
+      labelVisibility=new Uint32Array(labelReadBuf.getMappedRange().slice(0));labelPose=pose;
+    }
+    labelReadBuf.unmap();labelPending=false;
+  }).catch(()=>{labelPending=false;labelPose=null;});
+}
+
 function updateSkyLabels() {
   const on = SET.constNames && !WALL && !document.body.classList.contains('clean');
   if (!on) {
@@ -2785,13 +3781,16 @@ function updateSkyLabels() {
   const ux = -sy * sp, uy = cp, uz = cy * sp;
   const tanV = viewTan || SET.fov, tanH = tanV * (W / H);
   const placed = [];
-  for (const it of skyLabelEls) {
+  for (const [skyIndex,it] of skyLabelEls.entries()) {
+    if(!labelDepthVisible(ALL.length+skyIndex)){it.el.style.opacity='0';continue;}
     const d = it.d;
     const z = d[0] * fx + d[1] * fy + d[2] * fz;
     if (z < 0.15) { it.el.style.opacity = '0'; continue; }
     const sx = (d[0] * cy + d[2] * sy) / (tanH * z);
     const sy2 = (d[0] * ux + d[1] * uy + d[2] * uz) / (tanV * z);
     if (Math.abs(sx) > 1.0 || Math.abs(sy2) > 1.0) { it.el.style.opacity = '0'; continue; }
+    const bhFade = bhSkyFade(d);
+    if (bhFade > 0.995) { it.el.style.opacity = '0'; continue; }
     const px = (sx * 0.5 + 0.5) * cw, py = (0.5 - sy2 * 0.5) * ch;
     // де-клаттеринг: длинные имена не наезжают друг на друга и на подписи тел
     if (placed.some((p) => Math.abs(p[0] - px) < 105 && Math.abs(p[1] - py) < 22)) {
@@ -2802,7 +3801,7 @@ function updateSkyLabels() {
     }
     placed.push([px, py]);
     it.el.style.transform = `translate3d(${px}px, ${py}px, 0) translate(-50%, -50%)`;
-    it.el.style.opacity = '0.7';
+    it.el.style.opacity = String(0.7 * (1 - bhFade));
   }
 }
 
@@ -2812,7 +3811,7 @@ function updateLabels() {
   const fx = sy * cp, fy = sp, fz = -cy * cp;
   const ux = -sy * sp, uy = cp, uz = cy * sp;
   const tanV = viewTan || SET.fov, tanH = tanV * (W / H);
-  if (!SET.labels) { for (const el of labelEls) el.classList.remove('on', 'tgt'); labelPts.length = 0; return; }
+  if (!SET.labels) { for (const el of labelEls) { el.classList.remove('on', 'tgt'); el.style.opacity = ''; } labelPts.length = 0; return; }
   // разбираем подписи по дальности и не даём им наезжать друг на друга
   labelPts.length = 0;
   const order = ALL.map((b, i) => {
@@ -2820,10 +3819,13 @@ function updateLabels() {
     return { i, z: dx * fx + dy * fy + dz * fz };
   }).sort((a, b) => a.z - b.z);
   const placed = [];
-  for (const o of order) { const el = labelEls[o.i]; el.classList.remove('on'); el.classList.toggle('tgt', o.i === target); }
+  for (const o of order) { const el = labelEls[o.i]; el.classList.remove('on'); el.classList.toggle('tgt', o.i === target); el.style.opacity = ''; }
   for (const o of order) {
     const i = o.i, b = ALL[i], el = labelEls[i];
     if (!SET.small && (b.kind === 'comet' || b.kind === 'dwarf')) continue;
+    if (!labelDepthVisible(i)) continue;
+    const vis = bhVisibility(b.pos[0], b.pos[1], b.pos[2]);
+    if (vis < 0.25) continue;   // почти полностью перекрыт диском — подпись не читается
     const dx = b.pos[0] - posX, dy = b.pos[1] - posY, dz = b.pos[2] - posZ;
     const z = dx * fx + dy * fy + dz * fz;
     if (z < Math.max(b.R * 1.8, 1)) continue;
@@ -2838,6 +3840,7 @@ function updateLabels() {
     placed.push([px, py]);
     labelPts.push([px, py]);
     el.style.transform = `translate3d(${px}px, ${py}px, 0) translate(-50%, -50%)`;
+    if (vis < 0.995) el.style.opacity = vis.toFixed(3);
     el.classList.add('on');
   }
 }
@@ -3028,14 +4031,14 @@ function updatePhys() {
 
 // ============================================================ панель настроек
 const panel = $('panel'), gearBtn = $('gear');
-gearBtn.addEventListener('click', () => panel.classList.toggle('open'));
+gearBtn.addEventListener('click', () => panel.classList.contains('open')?closeMenu():showMenu('graphics'));
 gearBtn.addEventListener('pointerdown', (e) => e.stopPropagation());
 
 // ---- настройки: сохраняем всё, что меняется в панели
 function saveSettings() {
   const s = {};
   for (const k of ['orbits', 'labels', 'belt', 'rings', 'night', 'small', 'trojans', 'hilda', 'kuiper',
-    'deep', 'bh', 'phys', 'realSky', 'consts', 'constNames', 'engineHud', 'safe',
+    'deep', 'bh', 'phys', 'realSky', 'consts', 'constNames', 'engineHud', 'safe', 'simpleRocks',
     'wallTargets', 'wallDwell', 'wallOrbit', 'wallFps',
     'exposure', 'fov', 'bloom', 'quality']) s[k] = SET[k];
   store.set('nd.set', JSON.stringify(s));
@@ -3046,6 +4049,11 @@ bindChk('cRings', 'rings'); bindChk('cNight', 'night'); bindChk('cSmall', 'small
 bindChk('cTroj', 'trojans'); bindChk('cHilda', 'hilda'); bindChk('cKuiper', 'kuiper');
 bindChk('cDeep', 'deep'); bindChk('cBh', 'bh'); bindChk('cPhys', 'phys');
 bindChk('cRealSky', 'realSky'); bindChk('cConst', 'consts'); bindChk('cConstNames', 'constNames');
+$('cSimpleRocks').addEventListener('change', () => {
+  SET.simpleRocks=$('cSimpleRocks').checked;
+  invalidateLabelDepth();
+  saveSettings();
+});
 $('cSafe').addEventListener('change', () => setSafe($('cSafe').checked));
 
 // двигатель: отдельный блок поверх вида, скрывается из панели или клавишей G
@@ -3066,6 +4074,7 @@ function restoreSettings() {
   try { s = JSON.parse(store.get('nd.set', '{}')) || {}; } catch { s = {}; }
   for (const k in s) if (k in SET) SET[k] = s[k];
   SET.safe = SET.safe === true;
+  SET.simpleRocks = SET.simpleRocks === true;
   SET.wallTargets = sanitizeWallTargets(SET.wallTargets);
   SET.wallDwell = clamp(+SET.wallDwell || 45, 5, 300);
   SET.wallOrbit = clamp(Number.isFinite(+SET.wallOrbit) ? +SET.wallOrbit : 0.055, 0, 0.2);
@@ -3074,11 +4083,11 @@ function restoreSettings() {
 }
 
 function syncSettingsUI() {
-  if (!['auto', 'full', 'low'].includes(SET.quality)) SET.quality = 'auto';
+  if (!['auto', 'full', 'medium', 'low'].includes(SET.quality)) SET.quality = 'auto';
   const map = {
     cOrbits: 'orbits', cLabels: 'labels', cBelt: 'belt', cRings: 'rings', cNight: 'night', cSmall: 'small',
     cTroj: 'trojans', cHilda: 'hilda', cKuiper: 'kuiper', cDeep: 'deep', cBh: 'bh', cPhys: 'phys',
-    cRealSky: 'realSky', cConst: 'consts', cConstNames: 'constNames', cSafe: 'safe',
+    cRealSky: 'realSky', cConst: 'consts', cConstNames: 'constNames', cSafe: 'safe', cSimpleRocks: 'simpleRocks',
   };
   for (const id in map) { const el = $(id); if (el) el.checked = !!SET[map[id]]; }
   if ($('sExp')) $('sExp').value = String(SET.exposure);
@@ -3086,15 +4095,13 @@ function syncSettingsUI() {
   if ($('sBloom')) $('sBloom').value = String(SET.bloom);
   setEngineHud(SET.engineHud !== false);
   for (const b of $('qSeg').querySelectorAll('button')) b.classList.toggle('on', b.dataset.q === SET.quality);
-  if (SET.quality === 'full') scale = 1;
-  else if (SET.quality === 'low') scale = 0.6;
-  if (SET.quality !== 'auto') resize(true);
+  applyQuality();
   refreshWallUI();
 }
 
 // ============================================================ закладки видов и ссылки
 const BM_KEY = 'nd.views';
-const VIEW_BOOL = ['orbits', 'labels', 'belt', 'rings', 'night', 'small', 'trojans', 'hilda', 'kuiper', 'deep', 'bh', 'phys', 'realSky', 'consts', 'constNames', 'engineHud'];
+const VIEW_BOOL = ['orbits', 'labels', 'belt', 'rings', 'night', 'small', 'trojans', 'hilda', 'kuiper', 'deep', 'bh', 'phys', 'realSky', 'consts', 'constNames', 'engineHud', 'simpleRocks'];
 const VIEW_NUM = { exposure: [0.4, 2], fov: [0.32, 1], bloom: [0, 1] };
 let bookmarks = [];
 let modalOk = null;
@@ -3157,12 +4164,13 @@ function applyView(v) {
   target = -1;
   setTargetName(-1);
   if (v.set && typeof v.set === 'object') {
+    if (typeof v.set.simpleRocks === 'boolean' && v.set.simpleRocks !== SET.simpleRocks) invalidateLabelDepth();
     for (const k of VIEW_BOOL) if (typeof v.set[k] === 'boolean') SET[k] = v.set[k];
     for (const k in VIEW_NUM) {
       const n = +v.set[k];
       if (Number.isFinite(n)) SET[k] = clamp(n, VIEW_NUM[k][0], VIEW_NUM[k][1]);
     }
-    if (['auto', 'full', 'low'].includes(v.set.quality)) SET.quality = v.set.quality;
+    if (['auto', 'full', 'medium', 'low'].includes(v.set.quality)) SET.quality = v.set.quality;
   }
   syncSettingsUI();
   const d = Number(v.date);
@@ -3253,7 +4261,11 @@ function addBookmark() {
   toast(T('toastSaved'));
 }
 $('bmAddBtn').addEventListener('click', addBookmark);
-$('bmName').addEventListener('keydown', (e) => { e.stopPropagation(); if (e.key === 'Enter') addBookmark(); });
+$('bmName').addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') return;   // не глушим: общий обработчик закроет настройки
+  e.stopPropagation();              // буквы и Enter не уходят в игровые хоткеи
+  if (e.key === 'Enter') { e.preventDefault(); addBookmark(); }
+});
 
 async function copyViewLink() {
   const v = makeView('');
@@ -3335,6 +4347,7 @@ function syncDateUI() {
 
 function setSimDays(days) {
   if (!Number.isFinite(days)) return;
+  invalidateLabelDepth();
   const d = clamp(days, DATE_MIN_DAY, DATE_MAX_DAY);
   cancelFlight();
   if (bodyFall >= 0) cancelEntry();
@@ -3744,8 +4757,7 @@ for (const btn of $('qSeg').querySelectorAll('button')) {
   btn.addEventListener('click', () => {
     SET.quality = btn.dataset.q;
     for (const b of $('qSeg').querySelectorAll('button')) b.classList.toggle('on', b === btn);
-    if (SET.quality === 'full') { scale = 1; resize(true); }
-    else if (SET.quality === 'low') { scale = 0.6; resize(true); }
+    applyQuality();
     saveSettings();
   });
 }
@@ -3761,10 +4773,107 @@ $('tRelease').addEventListener('click', () => releaseTarget());
 $('cAim').addEventListener('change', () => { autoAim = $('cAim').checked; });
 
 const BH = [33250, 11400, -88350];
+const BH_R_JS = 900;     // радиус тени в шейдере, для экранной маски фона
 const BH_H = 520;        // горизонт событий (визуально чуть меньше тени)
 const BH_PULL = 7000;    // с какого расстояния начинает тянуть (управление там уже не спасает)
 // ось, вокруг которой закручивает падение
 const BH_AXIS = (() => { const a = [0.22, 0.95, -0.15], L = Math.hypot(a[0], a[1], a[2]); return a.map((v) => v / L); })();
+
+// дыра — пасхалка за Койпером: с обзорной камеры её не видно.
+// Диск, тень, маска фона и проверка подписей включаются только при подлёте.
+function bhVisual() {
+  return (SET.bh || bhPreview !== null) && Math.hypot(BH[0] - posX, BH[1] - posY, BH[2] - posZ) < BH_R_JS * 15.5;
+}
+
+function bhSkyFade(d) {
+  if (!bhVisual()) return 0;
+  const ox = BH[0] - posX, oy = BH[1] - posY, oz = BH[2] - posZ;
+  const b = Math.max(0, ox * d[0] + oy * d[1] + oz * d[2]);
+  const lim = BH_R_JS * 5.2;
+  const d2 = Math.max(0, ox * ox + oy * oy + oz * oz - b * b);
+  if (d2 >= lim * lim) return 0;
+  const t = clamp((Math.sqrt(d2) / lim - 0.84) / 0.16, 0, 1);
+  return 1 - t * t * (3 - 2 * t);
+}
+
+// CPU-порт того же bhOcclusion: подписи проверяются по той же трассировке,
+// без синхронного чтения GPU. Геометрия и завершение не зависят от качества.
+const BH_FAR_JS = 400000;
+function bhOcclusionPoint(x, y, z) {
+  const vx = x - posX, vy = y - posY, vz = z - posZ;
+  const L = Math.hypot(vx, vy, vz);
+  if (!(L > 1e-6)) return { depth: BH_FAR_JS, alpha: 0, L };
+  const dx = vx / L, dy = vy / L, dz = vz / L;
+  const cx = posX - BH[0], cy = posY - BH[1], cz = posZ - BH[2];
+  if (Math.hypot(cx, cy, cz) < BH_R_JS * 0.58) return { depth: 0, alpha: 1, L };
+  const ox = BH[0] - posX, oy = BH[1] - posY, oz = BH[2] - posZ;
+  const b = ox * dx + oy * dy + oz * dz;
+  const d2 = ox * ox + oy * oy + oz * oz - b * b;
+  const lim = BH_R_JS * 11;
+  if (bhSkyFade([dx, dy, dz]) <= 0) return { depth: BH_FAR_JS, alpha: 0, L };
+  const entry = Math.max(0, b - Math.sqrt(Math.max(lim * lim - d2, 0)));
+  let px = posX + dx * entry, py = posY + dy * entry, pz = posZ + dz * entry;
+  let ddx = dx, ddy = dy, ddz = dz;
+  let trns = 1, captured = false, escaped = false, capDepth = BH_FAR_JS, diskDepth = BH_FAR_JS;
+  const steps = 384;
+  const smooth = (a, b, v) => { const q = clamp((v - a) / (b - a), 0, 1); return q * q * (3 - 2 * q); };
+  const primitive = (v) => { const u = clamp(v, -1, 1); return u - (2 / 3) * u ** 3 + 0.2 * u ** 5; };
+  for (let i = 0; i < steps; i++) {
+    const rx = px - BH[0], ry = py - BH[1], rz = pz - BH[2];
+    const r = Math.hypot(rx, ry, rz);
+    const height = BH_R_JS * 0.02;
+    const baseDt = Math.min(Math.max(r * 0.07, BH_R_JS * 0.004), BH_R_JS * 0.20);
+    const band = height + baseDt * (Math.abs(ddy) + 0.1);
+    const nearDisk = 1 - smooth(band, band * 2, Math.abs(ry));
+    const dt = baseDt + (Math.min(baseDt, height * 0.65 / (Math.abs(ddy) + 0.03)) - baseDt) * nearDisk;
+    const ox0 = px, oy0 = py, oz0 = pz;
+    const k = ((1 - smooth(BH_R_JS * 8, lim, r)) * BH_R_JS * 1.15 * dt) / (r * r);
+    ddx -= (rx / r) * k; ddy -= (ry / r) * k; ddz -= (rz / r) * k;
+    const dl = Math.hypot(ddx, ddy, ddz) || 1;
+    ddx /= dl; ddy /= dl; ddz /= dl;
+    px += ddx * dt; py += ddy * dt; pz += ddz * dt;
+    const y0 = oy0 - BH[1], y1 = py - BH[1];
+    if (Math.min(y0, y1) < height && Math.max(y0, y1) > -height) {
+      const hx = (ox0 + px) * 0.5, hy = (oy0 + py) * 0.5, hz = (oz0 + pz) * 0.5;
+      const ax = hx - BH[0], az = hz - BH[2];
+      const rr = Math.hypot(ax, az);
+      const inner = BH_R_JS * 1.45, outer = BH_R_JS * 4.6;
+      if (rr > inner && rr < outer) {
+        const t = clamp((rr - inner) / (outer - inner), 0, 1);
+        const radial = smooth(0, 0.05, t) * (1 - smooth(0.62, 1, t)) * 0.9;
+        const u0 = y0 / height, u1 = y1 / height;
+        const profile = Math.abs(u1 - u0) > 0.001
+          ? (primitive(u1) - primitive(u0)) / (u1 - u0)
+          : Math.max(0, 1 - ((u0 + u1) * 0.5) ** 2) ** 2;
+        const column = Math.max(0, profile) * dt / height * (15 / 16);
+        const al = 1 - Math.exp(Math.log(Math.max(1 - radial * 0.5, 0.001)) * column);
+        trns *= 1 - al;
+        if (al > 0.000001 && diskDepth >= BH_FAR_JS) diskDepth = Math.hypot(hx - posX, hy - posY, hz - posZ);
+      }
+    }
+    const rn = Math.hypot(px - BH[0], py - BH[1], pz - BH[2]);
+    if (rn < BH_R_JS) {
+      captured = true;
+      capDepth = Math.hypot(px - posX, py - posY, pz - posZ);
+      break;
+    }
+    if (rn >= lim && (px - BH[0]) * ddx + (py - BH[1]) * ddy + (pz - BH[2]) * ddz > 0) { escaped = true; break; }
+  }
+  if (!escaped && !captured) { captured = true; capDepth = Math.hypot(px - posX, py - posY, pz - posZ); }
+  if (captured) return { depth: capDepth, alpha: 1, L };
+  if (diskDepth < BH_FAR_JS) return { depth: diskDepth, alpha: 1 - trns, L };
+  return { depth: BH_FAR_JS, alpha: 0, L };
+}
+
+// Видимость тела и подписи по тем же depth/alpha, что у прохода дыры:
+// впереди — 1, за тенью — 0, за диском — 1 - alpha.
+function bhVisibility(x, y, z) {
+  if (!bhVisual()) return 1;
+  const o = bhOcclusionPoint(x, y, z);
+  if (o.L < o.depth) return 1;
+  const v = [x - posX, y - posY, z - posZ];
+  return clamp(1 - o.alpha * bhSkyFade(v.map((c) => c / o.L)), 0, 1);
+}
 let bhSwallowed = false;
 let bhFall = 0;          // 0 — далеко, 1 — у горизонта: смаз звёзд, FOV, затемнение
 let lastLook = -1e9;     // когда последний раз двигали мышь
@@ -3784,7 +4893,7 @@ function blendLook(x, y, z, k) {
 // Плюс закрутка вокруг оси, поэтому затягивает по спирали, а не по прямой.
 function bhStep(dt) {
   if (!SET.bh) { bhFall = 0; return; }
-  if (SET.safe) {
+  if (safeActive()) {
     // безопасный режим: гравитация не тянет и не засасывает, но линзирование остаётся
     bhFall = 0;
     const dx = BH[0] - posX, dy = BH[1] - posY, dz = BH[2] - posZ;
@@ -3936,17 +5045,30 @@ const ROCK_K = 989;
 function rockBand(data, n, buf) {
   const px = new Float32Array(n), py = new Float32Array(n), pz = new Float32Array(n);
   const rr = new Float32Array(n), per = new Float32Array(n);
+  const sx = new Float32Array(n), sy = new Float32Array(n), sz = new Float32Array(n);
+  const a1 = new Float32Array(n * 3), a2 = new Float32Array(n * 3);
+  const spin = new Float32Array(n), tumble = new Float32Array(n);
+  const ph1 = new Float32Array(n), ph2 = new Float32Array(n);
+  const fam = new Float32Array(n), lobe = new Float32Array(n), lobeScale = new Float32Array(n);
   let rMin = 1e9, rMax = 0;
   for (let i = 0; i < n; i++) {
-    const o = i * 8;
+    const o = i * ROCK_STRIDE;
     const x = data[o], y = data[o + 1], z = data[o + 2], s = Math.abs(data[o + 3]);
     px[i] = x; py[i] = y; pz[i] = z; rr[i] = s;
+    fam[i] = data[o + 6];
+    sx[i] = data[o + 8]; sy[i] = data[o + 9]; sz[i] = data[o + 10];
+    a1[i * 3] = data[o + 12]; a1[i * 3 + 1] = data[o + 13]; a1[i * 3 + 2] = data[o + 14];
+    spin[i] = data[o + 15];
+    a2[i * 3] = data[o + 16]; a2[i * 3 + 1] = data[o + 17]; a2[i * 3 + 2] = data[o + 18];
+    tumble[i] = data[o + 19];
+    ph1[i] = data[o + 20]; ph2[i] = data[o + 21];
+    lobe[i] = data[o + 22]; lobeScale[i] = data[o + 23];
     const r0 = Math.hypot(x, z) || 1;
     per[i] = TAU * Math.pow(Math.max(r0, 1), 1.5) / ROCK_K;
     if (r0 < rMin) rMin = r0;
     if (r0 > rMax) rMax = r0;
   }
-  return { px, py, pz, rr, per, n, rMin, rMax, data, buf };
+  return { px, py, pz, rr, per, n, rMin, rMax, data, buf, sx, sy, sz, a1, a2, spin, tumble, ph1, ph2, fam, lobe, lobeScale };
 }
 const ROCK_BANDS = [
   { ...rockBand(beltData, BELT_N, beltBuf), on: () => SET.belt },
@@ -3956,20 +5078,23 @@ const ROCK_BANDS = [
 
 // ---- осколки: камень не убивает, а разлетается
 const DEBRIS_MAX = 420;
-const debrisData = new Float32Array(DEBRIS_MAX * 8);
+const debrisData = new Float32Array(DEBRIS_MAX * ROCK_STRIDE);
 const debrisBuf = device.createBuffer({ size: debrisData.byteLength, usage: BU.VERTEX | BU.COPY_DST });
 const debris = [];
+const debrisRnd = mulberry32(0x3F5A7C9E);
 let debrisN = 0;
 
 function spawnDebris(x, y, z, rad) {
-  const n = 14 + Math.min(18, Math.round(rad));
+  const profile=qualityProfile();
+  const n = Math.ceil((14 + Math.min(18, Math.round(rad)))*profile.debrisBurst);
   // осколки наследуют часть скорости корабля — иначе камера мгновенно уходит вперёд
   const isp = Math.hypot(velX, velY, velZ);
   const k = Math.min(0.5, 220 / Math.max(isp, 1));
   const ix = velX * k, iy = velY * k, iz = velZ * k;
-  for (let j = 0; j < n && debris.length < DEBRIS_MAX; j++) {
+  for (let j = 0; j < n && debris.length < profile.debris; j++) {
     const a = Math.random() * TAU, cb = Math.random() * 2 - 1, sb = Math.sqrt(1 - cb * cb);
     const sp = 4 + Math.random() * 12;
+    const shape = rockShape(debrisRnd);
     debris.push({
       x: x + (Math.random() - 0.5) * rad * 0.6,
       y: y + (Math.random() - 0.5) * rad * 0.6,
@@ -3978,11 +5103,13 @@ function spawnDebris(x, y, z, rad) {
       s: rad * (0.02 + Math.random() * 0.07),
       glow: 1.0,
       life: 1.1 + Math.random() * 1.8,
+      shape,
     });
   }
 }
 
 function updateDebris(dt) {
+  if (debris.length>qualityProfile().debris) debris.length=qualityProfile().debris;
   for (let i = debris.length - 1; i >= 0; i--) {
     const p = debris[i];
     p.life -= dt;
@@ -3993,24 +5120,146 @@ function updateDebris(dt) {
   }
   debrisN = debris.length;
   for (let i = 0; i < debrisN; i++) {
-    const p = debris[i], o = i * 8;
+    const p = debris[i], o = i * ROCK_STRIDE, sh = p.shape;
     debrisData[o] = p.x; debrisData[o + 1] = p.y; debrisData[o + 2] = p.z;
     // отрицательный размер — как у троянцев: поворот по орбите не применяется
     debrisData[o + 3] = -Math.max(0.1, p.s * Math.min(1, p.life * 2.2));
     debrisData[o + 4] = 0;
     debrisData[o + 5] = p.glow * 2.2;
-    debrisData[o + 6] = 0;
-    debrisData[o + 7] = (i * 17) % 100;
+    debrisData[o + 6] = sh.family;
+    debrisData[o + 7] = sh.seed;
+    debrisData[o + 8] = sh.sx; debrisData[o + 9] = sh.sy; debrisData[o + 10] = sh.sz;
+    debrisData[o + 11] = sh.mat;
+    debrisData[o + 12] = sh.a1[0]; debrisData[o + 13] = sh.a1[1]; debrisData[o + 14] = sh.a1[2];
+    debrisData[o + 15] = sh.spin;
+    debrisData[o + 16] = sh.a2[0]; debrisData[o + 17] = sh.a2[1]; debrisData[o + 18] = sh.a2[2];
+    debrisData[o + 19] = sh.tumble;
+    debrisData[o + 20] = sh.ph1; debrisData[o + 21] = sh.ph2;
+    debrisData[o + 22] = sh.lobe; debrisData[o + 23] = sh.lobeScale;
   }
-  if (debrisN) Q.writeBuffer(debrisBuf, 0, debrisData.subarray(0, debrisN * 8));
+  if (debrisN) Q.writeBuffer(debrisBuf, 0, debrisData.subarray(0, debrisN * ROCK_STRIDE));
 }
 
 function removeRock(g, i) {
-  g.data[i * 8 + 4] = -2;   // флаг «разбит»: шейдер схлопывает квад
-  Q.writeBuffer(g.buf, i * 32, g.data.subarray(i * 8, i * 8 + 8));
+  g.data[i * ROCK_STRIDE + 4] = -2;   // флаг «разбит»: шейдер схлопывает квад
+  Q.writeBuffer(g.buf, i * ROCK_STRIDE * 4, g.data.subarray(i * ROCK_STRIDE, i * ROCK_STRIDE + ROCK_STRIDE));
 }
 
 let rockDead = false, rockAt = [0, 0, 0], rockCool = 0, rockHitT = -1e9, rockSlow = 0;
+
+// Вращение точки вокруг оси — тот же порядок, что rotAxis в WGSL.
+function rotAxisJS(x, y, z, ax, ay, az, a) {
+  const c = Math.cos(a), s = Math.sin(a), d = x * ax + y * ay + z * az;
+  return [
+    x * c + (ay * z - az * y) * s + ax * d * (1 - c),
+    y * c + (az * x - ax * z) * s + ay * d * (1 - c),
+    z * c + (ax * y - ay * x) * s + az * d * (1 - c),
+  ];
+}
+function rockRadius(data, i) {
+  const o = i * ROCK_STRIDE;
+  if (typeof SET !== 'undefined' && SET.simpleRocks) return Math.abs(data[o + 3]);
+  const sx = data[o + 8], sy = data[o + 9], sz = data[o + 10];
+  const fam = data[o + 6];
+  const lobe = data[o + 22], lobeScale = data[o + 23];
+  const base = fam < 0.5 ? Math.hypot(sx,sy,sz)
+    : fam > 2.5 && fam < 3.5 ? lobe + Math.max(sx,sy,sz) * lobeScale
+    : Math.max(sx, sy, sz);
+  return Math.abs(data[o + 3]) * Math.max(1, base) * 1.12;
+}
+// Сегмент пути камеры против фактической (приближённой) формы камня.
+function rockHitData(data, i, cx, cy, cz, x0, y0, z0, x1, y1, z1) {
+  const o = i * ROCK_STRIDE;
+  const size = Math.abs(data[o + 3]);
+  if (!(size > 0)) return false;
+  if (typeof SET !== 'undefined' && SET.simpleRocks) {
+    if (data[o + 4] < -1.5) return false;
+    const dx=x1-x0, dy=y1-y0, dz=z1-z0;
+    const qx=x0-cx, qy=y0-cy, qz=z0-cz;
+    const length2=dx*dx+dy*dy+dz*dz;
+    const t=length2>0?Math.max(0,Math.min(1,-(qx*dx+qy*dy+qz*dz)/length2)):0;
+    const tolerance=Number.EPSILON*16*Math.max(1,size,Math.abs(qx),Math.abs(qy),Math.abs(qz),Math.abs(dx),Math.abs(dy),Math.abs(dz));
+    return Math.hypot(qx+dx*t,qy+dy*t,qz+dz*t)<=size+tolerance;
+  }
+  const fam = data[o + 6];
+  const sx = Math.max(0.05, data[o + 8]);
+  const sy = Math.max(0.05, data[o + 9]);
+  const sz = Math.max(0.05, data[o + 10]);
+  const ax1 = [data[o + 12], data[o + 13], data[o + 14]];
+  const spin = data[o + 15];
+  const ax2 = [data[o + 16], data[o + 17], data[o + 18]];
+  const tumble = data[o + 19];
+  const a1 = data[o + 20] + spin * simDays;
+  const a2 = data[o + 21] + tumble * simDays;
+  const local = (x, y, z) => {
+    let q = rotAxisJS(x, y, z, ax2[0], ax2[1], ax2[2], -a2);
+    q = rotAxisJS(q[0], q[1], q[2], ax1[0], ax1[1], ax1[2], -a1);
+    return [q[0] / size, q[1] / size, q[2] / size];
+  };
+  const p0 = local(x0 - cx, y0 - cy, z0 - cz);
+  const p1 = local(x1 - cx, y1 - cy, z1 - cz);
+  const dx = p1[0] - p0[0], dy = p1[1] - p0[1], dz = p1[2] - p0[2];
+  if (fam > 2.5 && fam < 3.5) {
+    const lobe = data[o + 22];
+    const ls = Math.max(0.05, data[o + 23]);
+    for (const sgn of [-1, 0, 1]) {
+      const cxL = sgn * lobe;
+      const rx=sgn===0?lobe+sx*ls*0.4+0.05:sx*ls;
+      const ry=sy*ls*(sgn===0?0.38:1)+(sgn===0?0.05:0), rz=sz*ls*(sgn===0?0.38:1)+(sgn===0?0.05:0);
+      const qx = (p0[0] - cxL) / rx, qy = p0[1] / ry, qz = p0[2] / rz;
+      const vx = dx / rx, vy = dy / ry, vz = dz / rz;
+      const vl2 = vx * vx + vy * vy + vz * vz;
+      const t = vl2 > 1e-10 ? Math.max(0, Math.min(1, -(qx * vx + qy * vy + qz * vz) / vl2)) : 0;
+      const ex = qx + vx * t, ey = qy + vy * t, ez = qz + vz * t;
+      if (ex * ex + ey * ey + ez * ez < 1.12 * 1.12) return true;
+    }
+    return false;
+  }
+  if (fam < 0.5) {
+    // Slab-метод в локальном базисе: общий интервал пересечения всех трёх осей.
+    const half = [sx * 0.86 + 0.095, sy * 0.86 + 0.095, sz * 0.86 + 0.095];
+    let enter = 0, exit = 1;
+    for (let axis = 0; axis < 3; axis++) {
+      const d = p1[axis] - p0[axis], h = half[axis];
+      if (d === 0) {
+        if (Math.abs(p0[axis]) > h) return false;
+        continue;
+      }
+      const a = (-h - p0[axis]) / d, b = (h - p0[axis]) / d;
+      enter = Math.max(enter, Math.min(a, b));
+      exit = Math.min(exit, Math.max(a, b));
+      if (enter > exit) return false;
+    }
+    // sdRock >= baseD-0.045: эта оболочка содержит рельеф, но исключает пустые углы.
+    // Форма выпукла: минимум вдоль всего сегмента ищется по монотонной производной.
+    // Поиск в нормированном обрезанном интервале не зависит от скорости камеры.
+    const offset = [0.04 * (data[o + 7] - 0.5), -0.025, 0.03];
+    const q = [p0[0] + dx * enter, p0[1] + dy * enter, p0[2] + dz * enter]
+      .map((v, k) => v / [sx, sy, sz][k] - offset[k]);
+    const delta = [dx / sx, dy / sy, dz / sz].map(v => v * (exit - enter));
+    const v = [q[0] + 0.12*q[1], q[1] - 0.06*q[2], q[2] + 0.08*q[0]];
+    const w = [delta[0] + 0.12*delta[1], delta[1] - 0.06*delta[2], delta[2] + 0.08*delta[0]];
+    const limit = 0.98 + 0.045 / (Math.min(sx, sy, sz) * 0.9);
+    let lo = 0, hi = 1;
+    for (let k = 0; k < 40; k++) {
+      const t = (lo + hi) * 0.5;
+      const x = v[0] + w[0]*t, y = v[1] + w[1]*t, z = v[2] + w[2]*t;
+      const r = Math.hypot(x,y,z);
+      const field = 0.65*r + 0.35*(0.95*Math.abs(x)+1.10*Math.abs(y)+0.90*Math.abs(z));
+      if (field <= limit + 1e-9) return true;
+      const slope = 0.65*(x*w[0]+y*w[1]+z*w[2])/Math.max(r,1e-20)
+        + 0.35*(0.95*Math.sign(x)*w[0]+1.10*Math.sign(y)*w[1]+0.90*Math.sign(z)*w[2]);
+      if (slope < 0) lo = t; else hi = t;
+    }
+    return false;
+  }
+  const qx = p0[0] / sx, qy = p0[1] / sy, qz = p0[2] / sz;
+  const vx = dx / sx, vy = dy / sy, vz = dz / sz;
+  const vl2 = vx * vx + vy * vy + vz * vz;
+  const t = vl2 > 1e-10 ? Math.max(0, Math.min(1, -(qx * vx + qy * vy + qz * vz) / vl2)) : 0;
+  const ex = qx + vx * t, ey = qy + vy * t, ez = qz + vz * t;
+  return ex * ex + ey * ey + ez * ez < 1.10 * 1.10;
+}
 
 function rockStep(x0, y0, z0) {
   if (rockDead || sunDead || bhSwallowed || bodyDead >= 0 || bodyFall >= 0) return;
@@ -4025,9 +5274,9 @@ function rockStep(x0, y0, z0) {
     if (hit) break;
     if (!g.on()) continue;
     if (rCam < g.rMin - 400 || rCam > g.rMax + 400) continue;
-    const { px, py, pz, rr, per, n } = g;
+    const { px, py, pz, per, n } = g;
     for (let i = 0; i < n; i++) {
-      if (g.data[i * 8 + 4] < -1.5) continue;   // уже разбит
+      if (g.data[i * ROCK_STRIDE + 4] < -1.5) continue;   // уже разбит
       let u = (simDays / per[i]) % 1;
       if (u < 0) u += 1;
       const a = u * TAU, ca = Math.cos(a), sa = Math.sin(a);
@@ -4037,10 +5286,11 @@ function rockStep(x0, y0, z0) {
       const t = ((x - x0) * sx + (y - y0) * sy + (z - z0) * sz) * il2;
       if (t < 0 || t > 1) continue;
       const qx = x0 + sx * t - x, qy = y0 + sy * t - y, qz = z0 + sz * t - z;
-      // радиус чуть больше видимого: в космосе без стерео «попал» и «пролетел рядом» не отличить
-      const rad = Math.max(1.0, rr[i] * 1.6 + 0.6);
-      if (qx * qx + qy * qy + qz * qz < rad * rad) {
-        hx = x; hy = y; hz = z; hit = true; hitR = rr[i]; hitG = g; hitI = i; break;
+      // быстрый отсев по габариту формы; затем сегмент против эллипсоида/глыбы
+      const bound = rockRadius(g.data, i);
+      if (qx * qx + qy * qy + qz * qz > (bound + 0.5) * (bound + 0.5)) continue;
+      if (rockHitData(g.data, i, x, y, z, x0, y0, z0, posX, posY, posZ)) {
+        hx = x; hy = y; hz = z; hit = true; hitR = bound; hitG = g; hitI = i; break;
       }
     }
   }
@@ -4049,15 +5299,16 @@ function rockStep(x0, y0, z0) {
     const jr = Math.hypot(JUP.pos[0], JUP.pos[2]);
     if (Math.abs(rCam - jr) < 3000) {
       for (let i = 0; i < TROJAN_N; i++) {
-        if (trojDead.has(i)) continue;
-        const o = i * 8;
+        if (trojDead.has(i) || trojanData[i * ROCK_STRIDE + 4] < -1.5) continue;
+        const o = i * ROCK_STRIDE;
         const x = trojanData[o], y = trojanData[o + 1], z = trojanData[o + 2];
         const t = ((x - x0) * sx + (y - y0) * sy + (z - z0) * sz) * il2;
         if (t < 0 || t > 1) continue;
         const qx = x0 + sx * t - x, qy = y0 + sy * t - y, qz = z0 + sz * t - z;
-        const rad = Math.abs(trojanData[o + 3]) * 0.85;
-        if (qx * qx + qy * qy + qz * qz < rad * rad) {
-          hx = x; hy = y; hz = z; hit = true; hitR = Math.abs(trojanData[o + 3]);
+        const bound = rockRadius(trojanData, i);
+        if (qx * qx + qy * qy + qz * qz > (bound + 0.5) * (bound + 0.5)) continue;
+        if (rockHitData(trojanData, i, x, y, z, x0, y0, z0, posX, posY, posZ)) {
+          hx = x; hy = y; hz = z; hit = true; hitR = bound;
           hitTroj = true; hitI = i; break;
         }
       }
@@ -4065,6 +5316,7 @@ function rockStep(x0, y0, z0) {
   }
   if (!hit) return;
   // не погибаем: камень разлетается осколками
+  rockAt = [hx, hy, hz];
   if (hitTroj) trojDead.add(hitI);
   else if (hitG) removeRock(hitG, hitI);
   spawnDebris(hx, hy, hz, hitR);
@@ -4176,7 +5428,7 @@ function bodyStep(x0, y0, z0, dt) {
   // вылетели из атмосферы — снова можно захватить
   if (!fallArmed && entryHeat < 0.05) fallArmed = true;
   // достаточно глубоко — отдаём управление атмосфере, дальше камера идёт сама
-  if (!SET.safe && performance.now() >= dateGuard && entryHeat > 0.55 && entryIdx >= 0 && bodyFall < 0 && fallArmed) {
+  if (!safeActive() && performance.now() >= dateGuard && entryHeat > 0.55 && entryIdx >= 0 && bodyFall < 0 && fallArmed) {
     bodyFall = entryIdx;
     fallPrev = [ALL[entryIdx].pos[0], ALL[entryIdx].pos[1], ALL[entryIdx].pos[2]];
     fallAt = performance.now();
@@ -4196,7 +5448,7 @@ function bodyStep(x0, y0, z0, dt) {
     const qx = x0 + sx * t - b.pos[0], qy = y0 + sy2 * t - b.pos[1], qz = z0 + sz * t - b.pos[2];
     if (qx * qx + qy * qy + qz * qz < rr * rr && t < ht) { ht = t; hit = i; }
   }
-  if (!SET.safe && performance.now() >= dateGuard && hit >= 0) {
+  if (!safeActive() && performance.now() >= dateGuard && hit >= 0) {
     posX = x0 + sx * ht; posY = y0 + sy2 * ht; posZ = z0 + sz * ht;
     hitBody(hit);
   }
@@ -4205,12 +5457,41 @@ function bodyStep(x0, y0, z0, dt) {
 // безопасный режим: не даём камере оказаться внутри тела даже на большой скорости.
 // Проверяем отрезок пути за кадр, а не только конечную точку.
 function safeClamp(x0, y0, z0) {
-  const sr = Math.hypot(posX, posY, posZ) || 1e-6;
+  // Солнце: проверяем весь отрезок пути, а не только конечную точку
   const sunMin = SUN_R * 1.04;
-  if (sr < sunMin) {
-    posX *= sunMin / sr; posY *= sunMin / sr; posZ *= sunMin / sr;
+  const sx = posX - x0, sy = posY - y0, sz = posZ - z0;
+  const c0 = x0 * x0 + y0 * y0 + z0 * z0 - sunMin * sunMin;
+  const dCur = Math.hypot(posX, posY, posZ);
+  if (c0 < -1e-3) {
+    // старт внутри сферы: выталкиваем по направлению старта, из центра — по +X
+    const d0 = Math.hypot(x0, y0, z0);
+    if (d0 < 1e-6) { posX = sunMin; posY = 0; posZ = 0; }
+    else { const s = sunMin / d0; posX = x0 * s; posY = y0 * s; posZ = z0 * s; }
     velX = velY = velZ = 0;
     sunHeat = Math.min(sunHeat, 0.55);
+  } else {
+    const A = sx * sx + sy * sy + sz * sz;
+    let hit = false;
+    if (A > 1e-8) {
+      const B = 2 * (x0 * sx + y0 * sy + z0 * sz);
+      const disc = B * B - 4 * A * c0;
+      if (disc >= 0) {
+        const t = (-B - Math.sqrt(disc)) / (2 * A);
+        if (t >= 0 && t <= 1) {
+          const ex = x0 + sx * t, ey = y0 + sy * t, ez = z0 + sz * t;
+          const el = Math.hypot(ex, ey, ez) || 1e-6;
+          posX = (ex / el) * sunMin; posY = (ey / el) * sunMin; posZ = (ez / el) * sunMin;
+          velX = velY = velZ = 0;
+          hit = true;
+        }
+      }
+    }
+    if (!hit && dCur < sunMin) {
+      if (dCur < 1e-6) { posX = sunMin; posY = 0; posZ = 0; }
+      else { const s = sunMin / dCur; posX *= s; posY *= s; posZ *= s; }
+      velX = velY = velZ = 0;
+    }
+    if (dCur < sunMin || hit) sunHeat = Math.min(sunHeat, 0.55);
   }
   for (let pass = 0; pass < 2; pass++) {
     for (const b of ALL) {
@@ -4252,11 +5533,27 @@ function safeClamp(x0, y0, z0) {
       }
     }
   }
-  const bhR = Math.hypot(BH[0] - posX, BH[1] - posY, BH[2] - posZ);
   const bhMin = BH_H * 1.12;
+  // Не позволяем перескочить безопасную сферу за один кадр.
+  const px = x0 - BH[0], py = y0 - BH[1], pz = z0 - BH[2];
+  const dx = posX - x0, dy = posY - y0, dz = posZ - z0;
+  const A = dx * dx + dy * dy + dz * dz;
+  const C = px * px + py * py + pz * pz - bhMin * bhMin;
+  if (C >= 0 && A > 0) {
+    const B = px * dx + py * dy + pz * dz;
+    const disc = B * B - A * C;
+    if (disc >= 0) {
+      const t = (-B - Math.sqrt(disc)) / A;
+      if (t >= 0 && t <= 1) {
+        posX = x0 + dx * t; posY = y0 + dy * t; posZ = z0 + dz * t;
+        velX = velY = velZ = 0;
+      }
+    }
+  }
+  const bhR = Math.hypot(BH[0] - posX, BH[1] - posY, BH[2] - posZ);
   if (bhR < bhMin) {
-    const s = bhMin / (bhR || 1e-6);
-    posX = BH[0] + (posX - BH[0]) * s;
+    const s = bhMin / (bhR || 1);
+    posX = BH[0] + (bhR ? (posX - BH[0]) * s : bhMin);
     posY = BH[1] + (posY - BH[1]) * s;
     posZ = BH[2] + (posZ - BH[2]) * s;
     velX = velY = velZ = 0;
@@ -4311,7 +5608,7 @@ function sunStep() {
     return;
   }
   sunHeat = clamp((SUN_HEAT - r) / (SUN_HEAT - SUN_HIT), 0, 1);
-  if (SET.safe) {
+  if (safeActive()) {
     // жар и миражи остаются, но камера не проваливается и не гибнет
     sunHeat = Math.min(sunHeat, 0.55);
     const min = SUN_R * 1.04;
@@ -4376,11 +5673,13 @@ function setSafe(on) {
   const cb = $('cSafe');
   if (cb) cb.checked = SET.safe;
   if (SET.safe) clearHazards();
+  syncBHPreviewUI();
   saveSettings();
   toast(T(SET.safe ? 'safeOn' : 'safeOff'));
 }
 
 function gotoBH() {
+  endBHPreview();
   cancelEntry();
   cancelFlight();
   releaseTarget();
@@ -4423,7 +5722,7 @@ document.addEventListener('pointerlockchange', () => {
   document.body.classList.toggle('locked', locked);
   if (locked) ui.classList.add('hide');
 });
-canvas.addEventListener('click', () => { if (!locked && !WALL) canvas.requestPointerLock?.(); });
+canvas.addEventListener('click', () => { if (!locked && !WALL && !$('guide').open) { closeMenu();canvas.requestPointerLock?.(); } });
 addEventListener('mousemove', (e) => {
   if (!locked) return;
   if (flight) cancelFlight();
@@ -4446,16 +5745,24 @@ const keys = { f: 0, b: 0, l: 0, r: 0, d: 0, u: 0, boost: 0 };
 const KEYMAP = { KeyW: 'f', KeyS: 'b', KeyA: 'l', KeyD: 'r', KeyQ: 'd', KeyE: 'u' };
 addEventListener('keydown', (e) => {
   if (WALL) return;
-  const tag = e.target && e.target.tagName;
-  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (e.target && e.target.isContentEditable)) return;
-  const k = KEYMAP[e.code];
-  if (k && flight) cancelFlight();
+  if ($('guide').open) return;
+  if(e.code==='Tab' && (panel.classList.contains('open') || $('search').classList.contains('open') || $('modal').classList.contains('open') || e.target.closest?.('button,input,select,textarea,summary'))) return;
   if (e.code === 'Escape') {
+    if (bhPreview !== null) { endBHPreview(); e.preventDefault(); return; }
     if ($('modal').classList.contains('open')) { closeModal(); return; }
     if ($('search').classList.contains('open')) { closeSearch(); return; }
     if (flight) { e.preventDefault(); finishFlight(); toast(T('toastFlightSkip')); return; }
+    if (document.pointerLockElement) document.exitPointerLock();
+    closeMenu();
+    document.body.classList.remove('clean', 'quiet');
+    ui.classList.remove('hide');
     return;
   }
+  const tag = e.target && e.target.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (e.target && e.target.isContentEditable)) return;
+  if(panel.classList.contains('open') && KEYMAP[e.code]) return;
+  const k = KEYMAP[e.code];
+  if (k && flight) cancelFlight();
   if (e.code === 'KeyF' || e.code === 'Slash') { e.preventDefault(); openSearch(); return; }
   if (k) keys[k] = 1;
   if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') keys.boost = 1;
@@ -4477,7 +5784,7 @@ addEventListener('keydown', (e) => {
     document.body.classList.remove('clean');
     if (document.pointerLockElement) document.exitPointerLock();
     ui.classList.remove('hide');
-    panel.classList.toggle('open');
+    if(panel.classList.contains('open')) closeMenu(); else showMenu('graphics');
   }
   if (e.code === 'Equal' || e.code === 'NumpadAdd') { e.preventDefault(); timeStep(1); }
   if (e.code === 'Minus' || e.code === 'NumpadSubtract') { e.preventDefault(); timeStep(-1); }
@@ -4514,7 +5821,6 @@ addEventListener('keydown', (e) => {
     document.body.classList.remove('quiet');
     return;
   }
-  if (e.code === 'Escape') { ui.classList.remove('hide'); panel.classList.remove('open'); }
 });
 addEventListener('keyup', (e) => {
   const k = KEYMAP[e.code];
@@ -4541,6 +5847,7 @@ function syncSpeedUI() {
   const sl = $('sSpeed');
   if (!sl) return;
   sl.value = spdToSlider(speedMul);
+  if($('shipSpeed')) $('shipSpeed').value=sl.value;
   $('spdVal').textContent = `×${speedMul < 1 ? speedMul.toFixed(2) : speedMul < 10 ? speedMul.toFixed(1) : speedMul.toFixed(0)}`;
   $('spdUnit').textContent = T('speedUnit', (BASE_SPEED * speedMul) | 0);
   for (const b of $('spdSeg').querySelectorAll('button')) {
@@ -4553,7 +5860,7 @@ function setSpeed(m) {
   syncSpeedUI();
 }
 addEventListener('wheel', (e) => {
-  if (!WALL) setSpeed(speedMul * (1 - Math.sign(e.deltaY) * 0.15));
+  if (!WALL && !$('guide').open && !e.target.closest?.('#panel,#search,#modal,dialog')) setSpeed(speedMul * (1 - Math.sign(e.deltaY) * 0.15));
 }, { passive: true });
 
 const BASE_SPEED = 900;
@@ -4587,31 +5894,37 @@ function wallTick(t, dt) {
 }
 
 // ============================================================ кадр
-let fpsT = 0, fps = 0, slowN = 0, fastN = 0, lastNow = 0, frameMs = 16.7;
+let fpsT = 0, fps = 0, lastNow = 0, frameMs = 16.7;
 
-let lastDraw = 0;
+let wallNextDraw = 0;
 function frame(now) {
-  // обои: потолок частоты из настроек, чтобы не жечь GPU круглые сутки
-  if (WALL && lastDraw && now - lastDraw < 1000 / SET.wallFps - 1) { requestAnimationFrame(frame); return; }
-  lastDraw = now;
-  const dtm = lastNow ? Math.min(now - lastNow, 100) : 16.7;
+  if($('guide').open) { lastNow=0;requestAnimationFrame(frame);return; }
+  // обои: расписание с сохранением остатка, без лишних догоняющих кадров
+  if (WALL) {
+    const step = 1000 / SET.wallFps;
+    if (!wallNextDraw) wallNextDraw = now + step;
+    if (now + 1 < wallNextDraw) { requestAnimationFrame(frame); return; }
+    if (now - wallNextDraw > step * 1.8) wallNextDraw = now + step;
+    else wallNextDraw += step;
+  }
+  const wallGap = lastNow ? now - lastNow : 0;
+  const bigGap = lastNow && wallGap > 500;
+  if (bigGap) { frameMs = 16.7; }
+  const dtm = lastNow ? Math.min(wallGap, 100) : 16.7;
   const dt = dtm / 1000;
   const t = (now - t0) / 1000;
-  if (lastNow) frameMs += (now - lastNow - frameMs) * 0.08;
+  if (lastNow && !bigGap) frameMs += (wallGap - frameMs) * 0.08;
   lastNow = now;
 
   if (now - fpsT > 500) {
     fps = Math.round(1000 / Math.max(frameMs, 0.5)); fpsT = now;
+    $('fpsCounter').textContent = fps + ' FPS';
     // цель зависит от режима: лимит FPS обоев не должен снижать качество
     const cap = WALL ? SET.wallFps : 60;
-    const lowFps = WALL ? cap * 0.86 : 50, highFps = WALL ? cap * 0.97 : 58;
-    if (SET.quality !== 'auto') { slowN = fastN = 0; }
-    else if (document.hidden || fps < 8) { slowN = fastN = 0; }
-    else if (fps < lowFps) { slowN++; fastN = 0; }
-    else if (fps >= highFps) { fastN++; slowN = 0; }
-    else { slowN = fastN = 0; }
-    if (SET.quality === 'auto' && slowN >= 2 && scale > 0.5) { scale = Math.max(0.5, scale - 0.07); slowN = 0; resize(true); }
-    else if (SET.quality === 'auto' && fastN >= 5 && scale < 1) { scale = Math.min(1, scale + 0.05); fastN = 0; resize(true); }
+    if (adaptQuality(fps,cap,document.hidden || bigGap)) {
+      resize(false);
+      updateQualityStatus();
+    }
     if (showHud) {
       // ближайшее тело и расстояние до него
       let best = '', bestD = 1e30;
@@ -4631,6 +5944,7 @@ function frame(now) {
     updateClock();
   }
 
+  beginLabelMotion();
   updateBodies(dt);
   if (WALL) wallTick(t, dt);
 
@@ -4661,8 +5975,8 @@ function frame(now) {
   const az = keys.f - keys.b, ax = keys.r - keys.l, ay = keys.u - keys.d;
   const moving = az || ax || ay;
   if (flight && moving) cancelFlight();
-  // внутри радиуса тяги управление отдаём дыре: это уже падение, а не полёт
-  const falling = (SET.bh && !bhSwallowed && Math.hypot(BH[0] - posX, BH[1] - posY, BH[2] - posZ) < BH_PULL) || bodyFall >= 0 || rockDead;
+  // В обычном режиме внутри радиуса тяги управление отдаём дыре.
+  const falling = (SET.bh && !safeActive() && !bhSwallowed && Math.hypot(BH[0] - posX, BH[1] - posY, BH[2] - posZ) < BH_PULL) || bodyFall >= 0 || rockDead;
   if (!falling && !flight) {
     const alive = bhSwallowed ? 0 : 1;
     const spd = BASE_SPEED * speedMul * (keys.boost ? 6 : 1);
@@ -4690,11 +6004,11 @@ function frame(now) {
   if (!WALL && !flight) bodyStep(bx0, by0, bz0, dt);
   if (!WALL && !flight) rockStep(bx0, by0, bz0);
   updateFlight();
-  if (!flight && !WALL && SET.safe) safeClamp(bx0, by0, bz0);
+  if (!flight && !WALL && safeActive()) safeClamp(bx0, by0, bz0);
   updateDebris(dt);
 
   // затемнение по мере падения: у горизонта экран гаснет
-  if (SET.bh && !SET.safe) {
+  if (SET.bh && !safeActive()) {
     const br = Math.hypot(BH[0] - posX, BH[1] - posY, BH[2] - posZ);
     const f = br < 1300 ? Math.pow(clamp((1300 - br) / (1300 - BH_H), 0, 1), 0.8) : 0;
     $('void').style.opacity = String(bhSwallowed ? 1 : f * 0.96);
@@ -4725,6 +6039,7 @@ function frame(now) {
     if (autoAim) lookAt(b.pos[0], b.pos[1], b.pos[2]);
   }
 
+  endLabelMotion();
   updateTrojans();
   // пояс и облака малых тел едут по своим орбитам вместе с планетами
   ORBIT[0] = simDays;
@@ -4735,7 +6050,7 @@ function frame(now) {
   const aspect = W / H;
   // при падении кадр расширяется — ощущение скорости; u.sun.w — сила смаза звёзд
   const warp = SET.bh ? (bhSwallowed ? 1 : Math.pow(bhFall, 1.35)) : 0;
-  const tanV = SET.fov * (1 + 0.30 * warp);
+  const tanV = (bhPreview !== null ? 0.65 : SET.fov) * (1 + 0.30 * warp);
   viewTan = tanV;
   const tanH = tanV * aspect;
   // жар Солнца или вход в атмосферу: пересвет и размытие
@@ -4753,8 +6068,10 @@ function frame(now) {
   U[8] = -sy_ * sp; U[9] = cp; U[10] = cy_ * sp; U[11] = tanV;
   U[12] = fx; U[13] = fy; U[14] = fz; U[15] = SET.exposure * (1 + 1.1 * heatU);
   U[16] = W; U[17] = H; U[18] = 1 / W; U[19] = 1 / H;
-  U[20] = SET.bloom * (1 + 3.5 * heatU); U[21] = 0.012; U[22] = 0.5;
-  U[23] = (SET.orbits ? 1 : 0) | (SET.night ? 2 : 0) | (SET.rings ? 4 : 0) | (SET.deep ? 8 : 0) | (SET.bh ? 16 : 0);
+  const renderQuality=qualityProfile();
+  const bloomLevels=SET.bloom>0?renderQuality.bloomLevels:0;
+  U[20] = bloomLevels ? SET.bloom * (1 + 3.5 * heatU) : 0; U[21] = 0.012; U[22] = 0.5;
+  U[23] = (SET.orbits ? 1 : 0) | (SET.night ? 2 : 0) | (SET.rings ? 4 : 0) | (SET.deep ? 8 : 0) | (bhVisual() ? 16 : 0) | renderQuality.flags | (SET.simpleRocks ? 2048 : 0);
   U[24] = SUN_R; U[25] = SUN_INDEX; U[26] = ALL.length; U[27] = warp;
   U[28] = heatU; U[29] = sunU; U[30] = sunV; U[31] = 0;
   Q.writeBuffer(ubo, 0, U);
@@ -4773,8 +6090,8 @@ function frame(now) {
   });
   r.setPipeline(pScene); r.setBindGroup(0, bgScene); r.draw(3); r.end();
 
-  // направляющие орбит: настоящие эллипсы, с проверкой глубины — за планетой не видны
-  if (SET.orbits && orbVerts) {
+  // без видимой дыры орбиты рисуются на прежнем месте — обычная сцена не меняется
+  if (!bhVisual() && SET.orbits && orbVerts) {
     r = enc.beginRenderPass({
       colorAttachments: [color(sceneTex.createView(), false)],
       depthStencilAttachment: { view: depthView, depthLoadOp: 'load', depthStoreOp: 'store' },
@@ -4819,18 +6136,44 @@ function frame(now) {
     r.end();
   }
 
-  for (let i = 0; i < NB_LEVELS; i++) {
+  // чёрная дыра: отдельный проход после всех слоёв, до bloom.
+  // Тень полностью перекрывает задние слои, полупрозрачный диск ослабляет их,
+  // тела и аппараты перед дырой проходят проверку глубины и остаются видимыми.
+  // С обзорной камеры (дыра далеко) проход пропускается — пасхалка не видна сразу.
+  if (bhVisual()) {
+    r = enc.beginRenderPass({
+      colorAttachments: [color(sceneTex.createView(), false)],
+      depthStencilAttachment: { view: depthView, depthReadOnly: true },
+    });
+    r.setPipeline(pBH); r.setBindGroup(0, bgScene); r.setBindGroup(1, bgBH); r.draw(3); r.end();
+  }
+
+  // направляющие орбит — после дыры: слой сам считает видимость точки
+  // (перед дырой виден, за тенью скрыт, за диском ослаблен), а depth-test
+  // по сцене по-прежнему убирает линии за планетами.
+  if (bhVisual() && SET.orbits && orbVerts) {
+    r = enc.beginRenderPass({
+      colorAttachments: [color(sceneTex.createView(), false)],
+      depthStencilAttachment: { view: depthView, depthLoadOp: 'load', depthStoreOp: 'store' },
+    });
+    r.setPipeline(pOrb); r.setBindGroup(0, bgHst);
+    r.setVertexBuffer(0, orbBuf); r.draw(orbVerts); r.end();
+  }
+
+  for (let i = 0; i < bloomLevels; i++) {
     r = enc.beginRenderPass({ colorAttachments: [color(levels[i].createView(), false)] });
     r.setPipeline(i === 0 ? pDown0 : pDown); r.setBindGroup(0, bgDown[i]); r.draw(3); r.end();
   }
-  for (let i = NB_LEVELS - 1; i > 0; i--) {
+  for (let i = bloomLevels - 1; i > 0; i--) {
     r = enc.beginRenderPass({ colorAttachments: [color(levels[i - 1].createView(), false)] });
     r.setPipeline(pUp); r.setBindGroup(0, bgUp[i - 1]); r.draw(3); r.end();
   }
   r = enc.beginRenderPass({ colorAttachments: [color(ctx.getCurrentTexture().createView(), true)] });
   r.setPipeline(pFinal); r.setBindGroup(0, bgFinal); r.draw(3); r.end();
 
+  const readLabels=encodeLabelDepth(enc);
   Q.submit([enc.finish()]);
+  if(readLabels) readLabelDepth();
   updateLabels();
   updateSkyLabels();
   updateBHMark();
@@ -4842,6 +6185,7 @@ function frame(now) {
 await device.queue.onSubmittedWorkDone();
 boot.classList.add('gone');
 window.__ss = () => ({ x: posX, y: posY, z: posZ, vx: velX, vy: velY, vz: velZ, yaw, pitch, speed: BASE_SPEED * speedMul });
+window.__perf = () => ({ fps, frameMs, scale, quality: SET.quality, tier: SET.quality==='auto'?autoQuality:SET.quality, simpleRocks:SET.simpleRocks, dprCap: qualityProfile().dpr, bloomLevels: SET.bloom>0?qualityProfile().bloomLevels:0, debrisLimit:qualityProfile().debris, canvas: [W, H] });
 window.__sound = () => Sound.state();
 window.__fx = () => {
   let near = 1e9;
@@ -4856,7 +6200,10 @@ window.__sat = () => ({ h: HST_INDEX, i: ISS_INDEX, list: ALL.filter((b) => b.ki
 window.__bd = () => Array.from(bodyData.slice(0, 60)).map((v) => Math.round(v * 100) / 100);
 // отладка затягивания: поставить камеру в d единицах от чёрной дыры
 window.__bhState = () => ({ r: Math.hypot(BH[0] - posX, BH[1] - posY, BH[2] - posZ), f: bhFall, sw: bhSwallowed });
+window.__bhVis = (x, y, z) => bhVisibility(x, y, z);
+window.__bhOcc = (x, y, z) => bhOcclusionPoint(x, y, z);
 window.__bhGo = (d) => {
+  endBHPreview();
   const dir = [0.55, 0.30, 0.78], L = Math.hypot(dir[0], dir[1], dir[2]);
   releaseTarget();
   bhSwallowed = false;
@@ -4867,6 +6214,26 @@ window.__bhGo = (d) => {
   velX = velY = velZ = 0;
   lookAt(BH[0], BH[1], BH[2]);
 };
+// Воспроизводимые близкие ракурсы для проверки газа, границы эффекта и плоскости.
+window.__bhView = (name = 'reference') => {
+  const views = {
+    reference: [[2600, 500, 3400], -0.5], center: [[2400, 260, 3400], 0],
+    edge: [[1800, 120, 2400], 0.48], plane: [[2400, 0, 3400], 0.25],
+    above: [[2600, 2400, 2000], 0], below: [[2600, -2400, 2000], 0],
+    system: [[2200, 754, -5846], 0],
+    boundary: [[5800, 1000, 7600], -0.35],
+  };
+  const view = views[name];
+  if (!view) throw new Error('Unknown black-hole view: ' + name);
+  cancelFlight(); clearHazards(); releaseTarget();
+  bhPreview = { name };
+  syncBHPreviewUI();
+  [posX, posY, posZ] = view[0].map((v, i) => BH[i] + v);
+  velX = velY = velZ = 0;
+  lookAt(...BH); yaw += view[1];
+  return window.__ss();
+};
+window.__bhViewEnd = endBHPreview;
 
 // отладка жара: поставить камеру в d единицах от центра Солнца
 window.__sunState = () => ({ r: Math.hypot(posX, posY, posZ), heat: sunHeat, dead: sunDead });
@@ -4886,10 +6253,18 @@ window.__rockDbg = () => {
   return { d: Math.round(best), r: Math.round(br), i: bi, rock: [Math.round(bx), Math.round(by), Math.round(bz)],
     cam: [Math.round(posX), Math.round(posY), Math.round(posZ)], v: Math.round(Math.hypot(velX, velY, velZ)), days: Math.round(simDays) };
 };
-window.__rockGo = (k = 0) => {  const g = ROCK_BANDS[0];
+window.__rockGo = (k = 0, fam = -1, dist = 0) => {
+  const g = ROCK_BANDS[0];
   let idx = -1;
-  for (let i = 0; i < g.n; i++) if (g.rr[i] > 8 && (k-- === 0)) { idx = i; break; }
-  if (idx < 0) return 'нет крупных камней';
+  if (fam >= 0) {
+    let best = 0;
+    for (let i = 0; i < g.n; i++) {
+      if (g.data[i * ROCK_STRIDE + 6] === fam && g.rr[i] > best) { best = g.rr[i]; idx = i; }
+    }
+  } else {
+    for (let i = 0; i < g.n; i++) if (g.rr[i] > 8 && (k-- === 0)) { idx = i; break; }
+  }
+  if (idx < 0) return 'нет подходящих камней';
   let u = (simDays / g.per[idx]) % 1;
   if (u < 0) u += 1;
   const a = u * TAU, ca = Math.cos(a), sa = Math.sin(a);
@@ -4897,13 +6272,14 @@ window.__rockGo = (k = 0) => {  const g = ROCK_BANDS[0];
   const z = g.px[idx] * sa + g.pz[idx] * ca;
   const y = g.py[idx];
   const r = Math.hypot(x, z) || 1;
+  const d = dist < 0 ? Math.max(0.1,g.rr[idx]*-dist) : dist > 0 ? dist : (fam >= 0 ? Math.max(55, g.rr[idx] * 4.0) : 90);
   releaseTarget();
   sunDead = false; bodyDead = -1; bodyFall = -1; rockDead = false;
   $('burn').classList.remove('on', 'dead');
-  posX = x - (x / r) * 90; posY = y; posZ = z - (z / r) * 90;
+  posX = x - (x / r) * d; posY = y; posZ = z - (z / r) * d;
   velX = velY = velZ = 0;
   lookAt(x, y, z);
-  return [Math.round(x), Math.round(y), Math.round(z), Math.round(g.rr[idx])].join(' ');
+  return [Math.round(x), Math.round(y), Math.round(z), Math.round(g.rr[idx]), idx].join(' ');
 };
 window.__near = (i, m = 1.5) => {
   const b = ALL[i];
@@ -4962,6 +6338,74 @@ if (WALL) {
 }
 updateClock();
 syncDateUI();
+// Navigation and first-run guide. Existing controls retain their event handlers.
+let menuSection='graphics', menuReturnFocus=null, guideOpenedAt=0;
+function clearMovement() { for(const k in keys) keys[k]=0; }
+function showMenu(section=menuSection) {
+  if(!panel.classList.contains('open')) menuReturnFocus=document.activeElement;
+  if(document.pointerLockElement) document.exitPointerLock();
+  clearMovement();
+  document.body.classList.remove('clean','quiet');
+  menuSection=section; panel.classList.add('open');
+  for(const el of panel.querySelectorAll('[data-section]')) el.hidden=el.dataset.section!==section;
+  for(const b of panel.querySelectorAll('[data-menu]')) { const on=b.dataset.menu===section;b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on)); }
+  panel.querySelector('[data-menu="'+section+'"]').focus();
+}
+function closeMenu() { panel.classList.remove('open');menuReturnFocus?.focus?.(); }
+function setupMenus() {
+  const groups=[[]];
+  for(const el of [...panel.children].slice(1)) {
+    if(el.classList.contains('sep')) { groups.push([]);el.remove(); }
+    else groups.at(-1).push(el);
+  }
+  const head=panel.querySelector('h2');head.remove();
+  const header=document.createElement('div');header.className='menuHeader';header.append(head);
+  const close=document.createElement('button');close.textContent='×';close.setAttribute('aria-label',T('closeMenu'));close.onclick=closeMenu;header.append(close);panel.prepend(header);
+  const nav=document.createElement('nav');nav.className='menuTabs';nav.setAttribute('aria-label',T('settings'));header.after(nav);
+  const sections=[['ship','shipMenu',[1,2,3,9]],['graphics','graphicsMenu',[7,8]],['scene','sceneMenu',[5]],['audio','audioMenu',[6]],['interface','interfaceMenu',[0]],['wall','wallSettings',[4]]];
+  for(const [id,key,indices] of sections) {
+    const b=document.createElement('button');b.dataset.menu=id;b.dataset.i18n=key;b.textContent=T(key);b.onclick=()=>showMenu(id);nav.append(b);
+    const section=document.createElement('section');section.dataset.section=id;section.hidden=true;
+    const title=document.createElement('h3');title.dataset.i18n=key;title.textContent=T(key);section.append(title);
+    for(const i of indices) for(const el of groups[i]||[]) section.append(el);
+    panel.append(section);
+  }
+  const ship=panel.querySelector('[data-section="ship"]');
+  const compact=document.createElement('div');compact.className='shipEngine';
+  // Keep the compact engine HUD; mirror its actions through a dedicated ship slider.
+  compact.innerHTML='<div class="row"><span data-i18n="engine">'+T('engine')+'</span></div><input id="shipSpeed" type="range" min="0" max="100" step="0.5" aria-label="'+T('engine')+'"><div class="seg"><button id="shipSearch" data-i18n="search">'+T('search')+'</button><button id="shipOverview" data-i18n="goOverview">'+T('goOverview')+'</button></div>';
+  ship.querySelector('h3').after(compact);
+  $('shipSpeed').value=$('sSpeed').value;$('shipSpeed').oninput=e=>{ $('sSpeed').value=e.target.value;$('sSpeed').dispatchEvent(new Event('input')); };
+  $('shipSearch').onclick=()=>{closeMenu();openSearch();};$('shipOverview').onclick=()=>{GO.find(([key])=>key==='goOverview')[1]();closeMenu();};
+  panel.querySelector('[data-section="graphics"]').append($('qualityStatus'));
+  const help=document.createElement('button');help.className='menuAction';help.dataset.i18n='helpMenu';help.textContent=T('helpMenu');help.onclick=()=>showGuide();panel.querySelector('[data-section="interface"]').append(help);
+  $('shipBtn').onclick=()=>panel.classList.contains('open')&&menuSection==='ship'?closeMenu():showMenu('ship');
+  $('helpBtn').onclick=()=>showGuide();
+}
+function showGuide() {
+  if(WALL) return;
+  closeMenu();clearMovement();
+  if(document.pointerLockElement) document.exitPointerLock();
+  guideOpenedAt=performance.now();
+  $('guideRepeat').checked=store.get('nd.guide.v1','new')==='always';
+  $('guide').showModal();
+}
+function finishGuide() {
+  const elapsed=performance.now()-guideOpenedAt;
+  if(flight) flight.t0+=elapsed;
+  fallAt+=elapsed;sunDeadAt+=elapsed;rockCool+=elapsed;rockHitT+=elapsed;dateGuard+=elapsed;
+  store.set('nd.guide.v1',$('guideRepeat').checked?'always':'done');
+  $('guide').close();clearMovement();
+}
+setupMenus();
+$('guideStart').onclick=finishGuide;
+$('guide').addEventListener('cancel',e=>{e.preventDefault();finishGuide();});
+// A modal guide pauses frame advancement and leaves saved safety untouched.
+addEventListener('keydown',e=>{
+  if($('guide').open && e.code!=='Escape' && e.code!=='Tab' && e.code!=='Enter' && e.code!=='Space') e.stopImmediatePropagation();
+},true);
+if(!WALL && store.get('nd.guide.v1','new')!=='done') showGuide();
+
 requestAnimationFrame(frame);
 })().catch((e) => {
   const el = document.getElementById('err');

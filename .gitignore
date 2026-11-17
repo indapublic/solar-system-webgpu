@@ -8,3 +8,8 @@ Thumbs.db
 
 # Node
 node_modules/
+
+# Локальные серии визуальных тестов и замеров: сотни мегабайт, не публикуются
+docs/rock-*/
+docs/bh-render/
+docs/menu-review/
