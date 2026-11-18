@@ -6428,5 +6428,16 @@ requestAnimationFrame(frame);
   el.textContent = String((e && e.stack) || e);
 });
 </script>
+<!-- Cloudflare Web Analytics -->
+<script type="module">
+  if (location.origin === 'https://indapublic.github.io' &&
+      ['/solar-system-webgpu/', '/solar-system-webgpu/index.html'].includes(location.pathname)) {
+    const beacon = document.createElement('script');
+    beacon.type = 'module';
+    beacon.src = 'https://static.cloudflareinsights.com/beacon.min.js';
+    beacon.dataset.cfBeacon = '{"token":"4b6915be5cc64bc5b0e73dd591e09a94"}';
+    document.body.append(beacon);
+  }
+</script>
 </body>
 </html>
