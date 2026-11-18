@@ -595,6 +595,7 @@
     <button data-q="full" data-i18n="qFull">Полное</button>
     <button data-q="low" data-i18n="qLow">Эконом</button>
   </div>
+  <label class="row" for="renderScale"><span data-i18n="renderScale">Масштаб рендера</span><select id="renderScale"><option value="1">100%</option><option value="0.8">80%</option></select></label>
   <label class="chk"><input type="checkbox" id="cSimpleRocks"><span data-i18n="simpleRocks">Простые одинаковые астероиды</span></label>
 
   <div class="sep"></div>
@@ -732,6 +733,7 @@ const I18N = {
     sound: 'Эмбиент', volume: 'Громкость',
     exposure: 'Экспозиция', fov: 'Поле зрения', bloom: 'Свечение',
     quality: 'Качество', qAuto: 'Авто', qFull: 'Максимальное', qLow: 'Низкое',
+    renderScale: 'Масштаб рендера',
     simpleRocks: 'Простые одинаковые астероиды · меньше нагрузка',
     goto: 'Перейти', note: 'Tab — спрятать всё · H — телеметрия · G — двигатель · M — звук',
     physGravity: 'Притяжение', physAtm: 'Атмосфера', physWater: 'Вода', physTemp: 'Температура',
@@ -816,6 +818,7 @@ const I18N = {
     realSky: 'Real sky', consts: 'Constellations', constNames: 'Constellation names',
     sound: 'Ambient', volume: 'Volume',
     exposure: 'Exposure', fov: 'Field of view', bloom: 'Bloom',
+    renderScale: 'Render scale',
     quality: 'Quality', qAuto: 'Auto', qFull: 'Maximum', qLow: 'Low',
     simpleRocks: 'Simple uniform asteroids · lower GPU load',
     goto: 'Go to', note: 'Tab — hide UI · H — telemetry · G — engine · M — sound',
@@ -892,7 +895,7 @@ const SET = {
   engineHud: true, safe: false, simpleRocks: false,
   wallTargets: ['Солнце', 'Земля', 'Юпитер', 'Сатурн', 'Марс', 'Нептун', 'Уран'],
   wallDwell: 45, wallOrbit: 0.055, wallFps: 30,
-  exposure: 1.0, fov: 0.62, bloom: 0.34, quality: 'auto',
+  exposure: 1.0, fov: 0.62, bloom: 0.34, quality: 'auto', renderScale: 1,
 };
 // Временный осмотр не входит в SET и никогда не сохраняется.
 let bhPreview = null;
@@ -3266,7 +3269,7 @@ function updateQualityStatus() {
   const tier=SET.quality==='auto'?autoQuality:SET.quality;
   const names=LANG==='en'?{low:'Low',medium:'Medium',full:'Maximum'}:{low:'Низкое',medium:'Среднее',full:'Максимальное'};
   const prefix=LANG==='en'?'Active':'Сейчас';
-  el.textContent=`${prefix}: ${names[tier]} · ${Math.round(scale*100)}% · DPR ≤ ${qualityProfile().dpr}`;
+  el.textContent=`${prefix}: ${names[tier]} · ${Math.round(Math.min(scale, SET.renderScale ?? 1)*100)}% · DPR ≤ ${qualityProfile().dpr}`;
 }
 function adaptQuality(fps, cap, inactive) {
   if (SET.quality !== 'auto' || inactive) { qualitySlow=qualityFast=0; return false; }
@@ -3331,8 +3334,9 @@ function resize(force) {
   const dpr = Math.min(devicePixelRatio || 1, qualityProfile().dpr);
   const dw = Math.max(2, Math.round(canvas.clientWidth * dpr));
   const dh = Math.max(2, Math.round(canvas.clientHeight * dpr));
-  const w = Math.max(2, Math.round(dw * scale));
-  const h = Math.max(2, Math.round(dh * scale));
+  const renderScale = Math.min(scale, SET.renderScale ?? 1);
+  const w = Math.max(2, Math.round(dw * renderScale));
+  const h = Math.max(2, Math.round(dh * renderScale));
   if (!force && w === W && h === H && dw === DW && dh === DH) return;
   DW = dw; DH = dh; W = w; H = h;
   canvas.width = DW; canvas.height = DH;
@@ -4041,7 +4045,7 @@ function saveSettings() {
   for (const k of ['orbits', 'labels', 'belt', 'rings', 'night', 'small', 'trojans', 'hilda', 'kuiper',
     'deep', 'bh', 'phys', 'realSky', 'consts', 'constNames', 'engineHud', 'safe', 'simpleRocks',
     'wallTargets', 'wallDwell', 'wallOrbit', 'wallFps',
-    'exposure', 'fov', 'bloom', 'quality']) s[k] = SET[k];
+    'exposure', 'fov', 'bloom', 'quality', 'renderScale']) s[k] = SET[k];
   store.set('nd.set', JSON.stringify(s));
 }
 const bindChk = (id, key) => { const el = $(id); el.addEventListener('change', () => { SET[key] = el.checked; saveSettings(); }); };
@@ -4070,6 +4074,14 @@ $('cEngine').addEventListener('change', () => { setEngineHud($('cEngine').checke
 const bindRange = (id, key) => { const el = $(id); el.addEventListener('input', () => { SET[key] = +el.value; saveSettings(); }); };
 bindRange('sExp', 'exposure'); bindRange('sFov', 'fov'); bindRange('sBloom', 'bloom');
 
+const renderScaleControl = $('renderScale');
+renderScaleControl.addEventListener('change', () => {
+  SET.renderScale = renderScaleControl.value === '0.8' ? 0.8 : 1;
+  resize(false);
+  updateQualityStatus();
+  saveSettings();
+});
+
 function restoreSettings() {
   let s = {};
   try { s = JSON.parse(store.get('nd.set', '{}')) || {}; } catch { s = {}; }
@@ -4084,6 +4096,8 @@ function restoreSettings() {
 }
 
 function syncSettingsUI() {
+  SET.renderScale = SET.renderScale === 0.8 ? 0.8 : 1;
+  renderScaleControl.value = String(SET.renderScale);
   if (!['auto', 'full', 'medium', 'low'].includes(SET.quality)) SET.quality = 'auto';
   const map = {
     cOrbits: 'orbits', cLabels: 'labels', cBelt: 'belt', cRings: 'rings', cNight: 'night', cSmall: 'small',
@@ -6186,7 +6200,7 @@ function frame(now) {
 await device.queue.onSubmittedWorkDone();
 boot.classList.add('gone');
 window.__ss = () => ({ x: posX, y: posY, z: posZ, vx: velX, vy: velY, vz: velZ, yaw, pitch, speed: BASE_SPEED * speedMul });
-window.__perf = () => ({ fps, frameMs, scale, quality: SET.quality, tier: SET.quality==='auto'?autoQuality:SET.quality, simpleRocks:SET.simpleRocks, dprCap: qualityProfile().dpr, bloomLevels: SET.bloom>0?qualityProfile().bloomLevels:0, debrisLimit:qualityProfile().debris, canvas: [W, H] });
+window.__perf = () => ({ fps, frameMs, scale: Math.min(scale, SET.renderScale ?? 1), quality: SET.quality, tier: SET.quality==='auto'?autoQuality:SET.quality, simpleRocks:SET.simpleRocks, dprCap: qualityProfile().dpr, bloomLevels: SET.bloom>0?qualityProfile().bloomLevels:0, debrisLimit:qualityProfile().debris, canvas: [W, H] });
 window.__sound = () => Sound.state();
 window.__fx = () => {
   let near = 1e9;
